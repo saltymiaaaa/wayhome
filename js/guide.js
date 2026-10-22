@@ -149,8 +149,8 @@
   G.enter = function (st) {
     G.state = 'event'; G.fails = 0; S.moving = false;
     if (st.type === 'turn') {
-      WH.buzz(st.dir); WH.beep('chime');
-      WH.say(T(st.dir === 'left' ? 'v_turn_L' : 'v_turn_R', { street: st.street }));
+      const landmark=G.nextLandmark?.();WH.buzz(G.viewMode==='wearer'?'soft':st.dir); WH.beep('chime');
+      WH.say(G.viewMode==='wearer'?(landmark?T('mgTowardLandmark',{name:landmark.lm.name}):T('mgNoLandmark')):T(st.dir === 'left' ? 'v_turn_L' : 'v_turn_R', { street: st.street }));
       G.waitT = 2.6;
     } else if (st.type === 'look') {
       WH.buzz('soft'); WH.beep('chime');

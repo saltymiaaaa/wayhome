@@ -95,6 +95,7 @@
     $('#memoryNavConfused').onclick=()=>WH.MemorySafety.confused();
     $('#memoryNavMic').onclick=()=>$('#csMic').click();
     WH.MemoryData.hydrate();
+    WH.MemoryData.syncBackend();
     WH.setLang(S.lang);
     WH.refresh();
     WH.sysLog(T('log_boot'), 'ok');

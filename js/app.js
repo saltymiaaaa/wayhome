@@ -31,7 +31,14 @@
       { id: 'l4', type: 'pharmacy', name: 'Green Cross Pharmacy', i: 6, j: 6, sx: 1, sz: -1 },
       { id: 'l5', type: 'bakery', name: 'Corner Bakery', i: 7, j: 6, sx: 1, sz: 1 },
       { id: 'l6', type: 'busstop', name: 'Bus Stop 24', i: 7, j: 8, sx: -1, sz: -1 },
-      { id: 'l7', type: 'school', name: 'Primary School', i: 5, j: 4, sx: 1, sz: 1 }
+      { id: 'l7', type: 'school', name: 'Primary School', i: 5, j: 4, sx: 1, sz: 1 },
+      { id: 'l8', type: 'bakery', name: 'Red Lantern Café', i: 3, j: 6, sx: 1, sz: -1 },
+      { id: 'l9', type: 'busstop', name: 'Community Bus Shelter', i: 5, j: 9, sx: -1, sz: 1 },
+      { id: 'l10', type: 'pharmacy', name: 'Harmony Pharmacy', i: 10, j: 6, sx: -1, sz: -1 },
+      { id: 'l11', type: 'parkgate', name: 'Banyan Garden Gate', i: 5, j: 2, sx: 1, sz: 1 },
+      { id: 'l12', type: 'market', name: 'Fruit Stall Corner', i: 3, j: 4, sx: -1, sz: 1 },
+      { id: 'l13', type: 'school', name: 'Community Learning Centre', i: 8, j: 6, sx: 1, sz: 1 },
+      { id: 'l14', type: 'pagoda', name: 'Riverside Pavilion', i: 5, j: 8, sx: 1, sz: -1 }
     ],
     phrases: [
       { id: 'p1', say: 'I fell', variants: ['i have fallen', 'wo shuai dao le', '我摔倒了', 'nga roi'], action: 'fall', who: 0 },

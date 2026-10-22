@@ -1,6 +1,6 @@
 # WayHome — Memory Garden and familiar wayfinding
 
-WayHome is a vanilla HTML/CSS/JavaScript classroom prototype with the existing Three.js Shenzhen city, wearable controls, family setup, safety simulations and guided return. It has no backend. Memory activities support enjoyable companionship and reminiscence; they do not assess or treat dementia or establish independent navigation ability.
+WayHome is a vanilla HTML/CSS/JavaScript classroom prototype with the existing Three.js Shenzhen city, wearable controls, family setup, safety simulations and guided return. It includes an optional dependency-free Node backend while retaining browser-local fallback storage. Memory activities support enjoyable companionship and reminiscence; they do not assess or treat dementia or establish independent navigation ability.
 
 ## Preview
 
@@ -14,11 +14,19 @@ python -m http.server 8765 --bind 127.0.0.1
 
 Keep that terminal running and open http://127.0.0.1:8765/. A localhost address is reachable only while a server is listening on that port on the same computer. The command must run in the directory containing `index.html`. Uploaded content is specific to the browser and origin: `file://`, localhost and GitHub Pages have separate storage.
 
+To run the frontend together with persistent backend storage, use Node.js 20 or newer:
+
+```sh
+npm start
+```
+
+This serves the site and `/api` on http://127.0.0.1:8765/. Caregiver metadata is written to `backend/data/state.json`; uploaded media is written to `backend/data/media/`. That directory is excluded from Git. Set `PORT`, `HOST`, or `WAYHOME_DATA_DIR` to change the defaults. The backend binds to localhost by default and does not provide production authentication.
+
 GitHub Pages requires no build step: publish the repository root containing `index.html`. Paths are relative, including the bundled Three.js library. The only external display dependency is an optional Google font with a system fallback. This change does not publish or push the repository automatically.
 
 ## Memory Garden
 
-Sprout is a customizable, gently animated companion with happy, curious, thinking, reassuring and concerned expressions. Open **Memory Library → Companion preferences** to change its name, language, color theme, voice, interaction style, favorite activities and check-in delay.
+Sprout is a customizable, gently animated companion with happy, curious, thinking, reassuring and concerned expressions. Change its name to any preferred name in either **Caregiver setup → Companion voice** or **Memory Library → Companion settings**. The same setting also persists through the optional backend. Companion settings include language, color theme, voice, interaction style, favorite activities and check-in delay.
 
 - **Familiar Faces:** approved fictional illustrations or uploaded family photographs. Yes, Not sure and Tell me more all lead to supportive caregiver-provided stories. Another memory selects the next approved record.
 - **My Happy Places:** approved place pictures and personal stories. These interactions never start a route or change navigation permissions.
@@ -43,9 +51,9 @@ Guidance offers **3D Presenter View** and **Wearer View**. Both use the same rou
 
 **Memory Library** appears in family setup and the stage toolbar. Add, edit, delete, approve or revoke people, places, music, Memory Journeys and routines; preview the wearer experience without personal photos. The People, Places and Music tabs accept additional caregiver uploads, while the Memory Journeys tab connects those records into reusable sequences. Samples are fictional and labeled. No copyrighted song is bundled.
 
-Lightweight metadata, preferences, activity counts, garden objects and the latest 300 local events use `localStorage` (`wayhome.memory.v1`). Uploaded JPEG/PNG/WebP/GIF images (up to 5 MB) and audio (up to 25 MB) use IndexedDB (`wayhome-media`). Music uploads require an authorization checkbox. Storage failures show a warning; there is no cloud backup or device synchronization. **Clear local memories** asks for an explicit second action and removes this feature's media and metadata, including garden progress. It does not reset unrelated setup fields.
+Lightweight metadata, preferences, activity counts, garden objects and the latest 300 local events use `localStorage` (`wayhome.memory.v1`). Uploaded JPEG/PNG/WebP/GIF images (up to 5 MB) and audio (up to 25 MB) use IndexedDB (`wayhome-media`). When the Node backend is running on the same origin, the same records and new media uploads are mirrored to its data directory. Music uploads require an authorization checkbox. Static GitHub Pages deployments remain browser-local and do not provide cloud backup or device synchronization. **Clear local memories** asks for an explicit second action and removes this feature's media and metadata, including garden progress. It does not reset unrelated setup fields.
 
-Each place has independent **memory** and **navigation** approvals. Navigation approval requires an integer 3D grid position (i/j from 0 to 12); an optional waypoint is an `i,j` pair. The route uses only navigation-approved, positioned landmarks close to its actual path, and checks an optional waypoint lies on that path. Memory-only photos cannot become navigation landmarks through game answers. Setup-created places begin with both approvals off; review them in the library. Editing the library during guidance pauses and rebuilds the route, so revoked content cannot remain in the current instruction.
+Each place has independent **memory** and **navigation** approvals. Fourteen approved sample landmarks provide broader prototype route coverage. Navigation approval requires an integer 3D grid position (i/j from 0 to 12); an optional waypoint is an `i,j` pair. The route uses only navigation-approved, positioned landmarks close to its actual path, and checks an optional waypoint lies on that path. Memory-only photos cannot become navigation landmarks through game answers. Setup-created places begin with both approvals off; review them in the library. Editing the library during guidance pauses and rebuilds the route, so revoked content cannot remain in the current instruction.
 
 ## Check-in, safe return and simulated handover
 

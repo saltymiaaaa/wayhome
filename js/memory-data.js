@@ -16,11 +16,13 @@
     try { const raw=localStorage.getItem(KEY); D.state=raw ? JSON.parse(raw) : fresh;
       if(D.state.version!==1 || !['people','places','music','routines','garden','events'].every(k=>Array.isArray(D.state[k]))) throw Error('schema');
       D.state.journeys=Array.isArray(D.state.journeys)?D.state.journeys:fresh.journeys;
+      const known=new Set(D.state.places.map(p=>p.id));fresh.places.filter(p=>!known.has(p.id)).forEach(p=>D.state.places.push(p));
       D.state.prefs={...fresh.prefs,...D.state.prefs}; D.state.usage=D.state.usage||{};
     } catch(e) {D.state=fresh; D.persistent=false;}
     D.applyPrefs(); D.syncPlaces(); return D.state;
   };
-  D.save = function () {try {localStorage.setItem(KEY,JSON.stringify(D.state)); return true;} catch(e) {D.persistent=false; return false;} };
+  D.save = function () {try {localStorage.setItem(KEY,JSON.stringify(D.state));WH.Backend?.queueState(D.state);return true;} catch(e) {D.persistent=false; return false;} };
+  D.syncBackend=async function(){const remote=await WH.Backend?.sync(D.state);if(!remote)return false;const fresh=D.defaults();if(remote.version!==1||!['people','places','music','routines','journeys','garden','events'].every(k=>Array.isArray(remote[k])))return false;D.state={...remote,prefs:{...fresh.prefs,...remote.prefs},usage:remote.usage||{}};D.applyPrefs();D.syncPlaces();D.save();D.refresh();return true;};
   D.applyPrefs=()=>{const p=D.state.prefs; WH.S.assistant.name=p.name; WH.S.voiceOn=p.voice;};
   D.hasPosition=p=>Number.isInteger(p.i)&&Number.isInteger(p.j)&&p.i>=0&&p.i<=12&&p.j>=0&&p.j<=12;
   D.navigationPlaces=()=>D.state.places.filter(p=>p.navigationApproved===true&&D.hasPosition(p));
@@ -33,13 +35,13 @@
   D.grow=function(kind='flower'){if(!['flower','tree','butterfly'].includes(kind))return;D.state.garden.push({id:'g-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),kind,at:Date.now()});D.save();};
   D.complete=function(kind){D.state.usage[kind]=(D.state.usage[kind]||0)+1;D.state.lastActivity=kind;D.grow();D.event('activity',kind);};
   D.recommend=function(){return ['journey','people','places','music','routines','garden'].filter(k=>k!==D.state.lastActivity).sort((a,b)=>((D.state.usage[b]||0)+(D.state.prefs.favorites.includes(b)?3:0))-((D.state.usage[a]||0)+(D.state.prefs.favorites.includes(a)?3:0)))[0];};
-  D.url=id=>id?D.urls.get(id)||'':'';
+  D.url=id=>id?D.urls.get(id)||WH.Backend?.mediaUrl(id)||'':'';
   D.openDB=function(){return new Promise((resolve,reject)=>{if(!window.indexedDB)return reject(Error('storage'));const q=indexedDB.open('wayhome-media',1);q.onupgradeneeded=()=>q.result.createObjectStore('media');q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error);});};
   D.hydrate=async function(){try{D.db=await D.openDB();await new Promise((resolve,reject)=>{const tx=D.db.transaction('media');const q=tx.objectStore('media').openCursor();q.onsuccess=()=>{const c=q.result;if(c){D.urls.set(c.key,URL.createObjectURL(c.value));c.continue();}else resolve();};q.onerror=()=>reject(q.error);});D.refresh();}catch(e){D.mediaUnavailable=true;}};
-  D.putMedia=async function(file,kind){const allowed=kind==='audio'?/^audio\//:/^image\/(jpeg|png|webp|gif)$/;if(!allowed.test(file.type)||file.size>(kind==='audio'?25:5)*1024*1024)throw Error('file');if(!D.db)D.db=await D.openDB();const id='media-'+Date.now()+'-'+Math.random().toString(36).slice(2);await new Promise((resolve,reject)=>{const tx=D.db.transaction('media','readwrite');tx.objectStore('media').put(file,id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});D.urls.set(id,URL.createObjectURL(file));return id;};
-  D.deleteMedia=function(id){if(D.urls.has(id)){URL.revokeObjectURL(D.urls.get(id));D.urls.delete(id);}if(D.db){const tx=D.db.transaction('media','readwrite');tx.objectStore('media').delete(id);}};
+  D.putMedia=async function(file,kind){const allowed=kind==='audio'?/^audio\//:/^image\/(jpeg|png|webp|gif)$/;if(!allowed.test(file.type)||file.size>(kind==='audio'?25:5)*1024*1024)throw Error('file');if(!D.db)D.db=await D.openDB();const id='media-'+Date.now()+'-'+Math.random().toString(36).slice(2);await new Promise((resolve,reject)=>{const tx=D.db.transaction('media','readwrite');tx.objectStore('media').put(file,id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});D.urls.set(id,URL.createObjectURL(file));await WH.Backend?.putMedia(id,file);return id;};
+  D.deleteMedia=function(id){if(D.urls.has(id)){URL.revokeObjectURL(D.urls.get(id));D.urls.delete(id);}if(D.db){const tx=D.db.transaction('media','readwrite');tx.objectStore('media').delete(id);}WH.Backend?.deleteMedia(id);};
   D.text=(item,key='name')=>item[key+'Key']?WH.t(item[key+'Key']):item[key]||'';
   D.snapshot=()=>clone(D.state);
-  D.clear=async function(){if(!D.db)D.db=await D.openDB();await new Promise((resolve,reject)=>{const tx=D.db.transaction('media','readwrite');tx.objectStore('media').clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});D.urls.forEach(url=>URL.revokeObjectURL(url));D.urls.clear();D.state=D.defaults();D.state.garden=[];D.state.people=[];D.state.places=[];D.state.music=[];D.state.routines=[];D.state.journeys=[];D.persistent=true;D.save();D.applyPrefs();D.refresh();};
+  D.clear=async function(){if(!D.db)D.db=await D.openDB();await new Promise((resolve,reject)=>{const tx=D.db.transaction('media','readwrite');tx.objectStore('media').clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});await WH.Backend?.clearMedia();D.urls.forEach(url=>URL.revokeObjectURL(url));D.urls.clear();D.state=D.defaults();D.state.garden=[];D.state.people=[];D.state.places=[];D.state.music=[];D.state.routines=[];D.state.journeys=[];D.persistent=true;D.save();D.applyPrefs();D.refresh();};
   D.load();
 })();
