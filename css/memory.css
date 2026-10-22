@@ -38,4 +38,5 @@
 @media(prefers-reduced-motion:reduce){.sprout,.sprout *,.garden-scene *,.nb{animation:none!important;transition:none!important}}
 
 .wearer-nav-actions button{font-family:inherit;font-size:18px;font-weight:700}
+#scr-nav[data-nav-view=wearer] .wearer-nav{display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;align-content:start;overflow:hidden;padding:20px 20px 14px}.wearer-nav-arrow{font-size:clamp(58px,10vh,96px);margin:8px 0}.wearer-nav h1{margin:4px 0;font-size:clamp(25px,4vw,38px)}.wearer-nav>p{margin:4px 0 8px;font-size:18px}.wearer-nav figure{min-height:0;overflow:auto;margin:8px auto}.wearer-nav figure img{height:min(22vh,150px)}.wearer-nav-actions{position:sticky;bottom:0;z-index:2;background:#fffdf7;padding-top:10px}.wearer-nav-actions button{flex:1 1 145px}.wearer-nav-actions button:disabled{background:#d8ddd7;color:#657269;cursor:not-allowed}
 body.memory-presenting #memoryApp .mg-shell{padding-bottom:220px}

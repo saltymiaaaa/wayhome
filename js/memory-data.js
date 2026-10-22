@@ -8,12 +8,14 @@
     people:[{id:'sample-mei', name:'Mei', relationshipKey:'mgDaughter', storyKey:'mgMeiStory', moreKey:'mgMeiMore', relatedPlaceId:'l3',relatedMusicId:'sample-music',approved:true, sample:true}],
     places:seedPlaces.map(p => ({...p, name:p.id === 'l3' ? 'Morning Market' : p.name,nameKey:p.id==='l3'?'mgMarket':null, storyKey:'mgPlaceStory', memoryApproved:true, navigationApproved:true, sample:true, waypoint:{i:p.i,j:p.j}})),
     music:[{id:'sample-music',nameKey:'mgSong',storyKey:'mgNoAudio',approved:true,sample:true}],
+    journeys:[{id:'sample-journey',name:'Mei and the Morning Market',personId:'sample-mei',placeId:'l3',musicId:'sample-music',approved:true,sample:true}],
     routines:[{id:'sample-routine',nameKey:'mgOutside',stepsKeys:['mgShoes','mgKeys','mgJacket'],approved:true,sample:true}],
     garden:[{id:'first-tree',kind:'tree',at:0}], events:[], usage:{}, lastActivity:null});
   D.load = function () {
     const fresh=D.defaults();
     try { const raw=localStorage.getItem(KEY); D.state=raw ? JSON.parse(raw) : fresh;
       if(D.state.version!==1 || !['people','places','music','routines','garden','events'].every(k=>Array.isArray(D.state[k]))) throw Error('schema');
+      D.state.journeys=Array.isArray(D.state.journeys)?D.state.journeys:fresh.journeys;
       D.state.prefs={...fresh.prefs,...D.state.prefs}; D.state.usage=D.state.usage||{};
     } catch(e) {D.state=fresh; D.persistent=false;}
     D.applyPrefs(); D.syncPlaces(); return D.state;
@@ -25,7 +27,7 @@
   D.approved=kind=>D.state[kind].filter(p=>kind==='places'?p.memoryApproved===true:p.approved===true);
   D.syncPlaces=function(){WH.S.landmarks=D.state.places.filter(D.hasPosition).map(p=>({...p,sx:p.sx||1,sz:p.sz||-1,photo:D.url(p.photoId)||p.photo||null}));};
   D.refresh=function(){D.syncPlaces(); (WH.worlds||[]).forEach(w=>w.rebuildLandmarks()); WH.MemorySafety&&WH.MemorySafety.libraryChanged();};
-  D.upsert=function(kind,record){if(!['people','places','music','routines'].includes(kind))throw Error('kind'); const list=D.state[kind];const old=list.find(x=>x.id===record.id); const item={...old,...record,id:record.id||('m-'+Date.now()+'-'+Math.random().toString(36).slice(2,8))}; if(kind==='places'&&item.navigationApproved&&!D.hasPosition(item))throw Error('position');if(old)list.splice(list.indexOf(old),1,item);else list.push(item);D.save();D.refresh();return item;};
+  D.upsert=function(kind,record){if(!['people','places','music','routines','journeys'].includes(kind))throw Error('kind'); const list=D.state[kind];const old=list.find(x=>x.id===record.id); const item={...old,...record,id:record.id||('m-'+Date.now()+'-'+Math.random().toString(36).slice(2,8))}; if(kind==='places'&&item.navigationApproved&&!D.hasPosition(item))throw Error('position');if(old)list.splice(list.indexOf(old),1,item);else list.push(item);D.save();D.refresh();return item;};
   D.remove=function(kind,id){const list=D.state[kind], item=list.find(x=>x.id===id);D.state[kind]=list.filter(x=>x.id!==id);D.save();D.refresh();if(item)['photoId','audioId'].forEach(k=>{if(item[k])D.deleteMedia(item[k]);});};
   D.event=function(type,detail){D.state.events.push({type,detail:detail||'',at:new Date().toISOString()});D.state.events=D.state.events.slice(-300);D.save();};
   D.grow=function(kind='flower'){if(!['flower','tree','butterfly'].includes(kind))return;D.state.garden.push({id:'g-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),kind,at:Date.now()});D.save();};
@@ -38,6 +40,6 @@
   D.deleteMedia=function(id){if(D.urls.has(id)){URL.revokeObjectURL(D.urls.get(id));D.urls.delete(id);}if(D.db){const tx=D.db.transaction('media','readwrite');tx.objectStore('media').delete(id);}};
   D.text=(item,key='name')=>item[key+'Key']?WH.t(item[key+'Key']):item[key]||'';
   D.snapshot=()=>clone(D.state);
-  D.clear=async function(){if(!D.db)D.db=await D.openDB();await new Promise((resolve,reject)=>{const tx=D.db.transaction('media','readwrite');tx.objectStore('media').clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});D.urls.forEach(url=>URL.revokeObjectURL(url));D.urls.clear();D.state=D.defaults();D.state.garden=[];D.state.people=[];D.state.places=[];D.state.music=[];D.state.routines=[];D.persistent=true;D.save();D.applyPrefs();D.refresh();};
+  D.clear=async function(){if(!D.db)D.db=await D.openDB();await new Promise((resolve,reject)=>{const tx=D.db.transaction('media','readwrite');tx.objectStore('media').clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});D.urls.forEach(url=>URL.revokeObjectURL(url));D.urls.clear();D.state=D.defaults();D.state.garden=[];D.state.people=[];D.state.places=[];D.state.music=[];D.state.routines=[];D.state.journeys=[];D.persistent=true;D.save();D.applyPrefs();D.refresh();};
   D.load();
 })();
