@@ -211,6 +211,7 @@
       <div class="nt-dist" id="ntDist"></div>
     </div>
     <div class="nav-tools">
+      <div class="seg nav-view-switch" id="navViewSwitch"><button data-nav-view="presenter" data-i18n="mgPresenterView">3D Presenter View</button><button data-nav-view="wearer" data-i18n="mgWearerView">Wearer View</button></div>
       <div class="nav-prog" id="navProg"></div>
       <div class="nav-btns">
         <button class="nbtn skip" id="navSkip"><span data-ic="skip" data-sz="22"></span><span data-i18n="skipStep">Skip step</span></button>
@@ -227,6 +228,13 @@
   <div class="nav-mini"><div id="navMini"></div><span id="navMiniTag"></span></div>
 
   <div class="nav-bottom" id="navBottom"></div>
+  <section class="wearer-nav" id="wearerNav" aria-live="polite">
+    <div class="wearer-nav-status" id="wearerNavStatus"></div>
+    <div class="wearer-nav-arrow" id="wearerNavArrow" aria-hidden="true">↑</div>
+    <h1 id="wearerNavMain"></h1><p id="wearerNavSub"></p>
+    <figure id="wearerNavLandmark"><img id="wearerNavPhoto" alt=""><figcaption id="wearerNavCaption"></figcaption></figure>
+    <div class="wearer-nav-actions"><button id="wearerNavHelp" data-i18n="mgHelp">I need help</button><button id="wearerNavCancel" data-i18n="mgCancelGuide">Cancel guidance</button></div>
+  </section>
   <details class="memory-nav-input"><summary data-i18n="mgNavSay">Speak or type to your companion</summary><form id="memoryNavForm"><label for="memoryNavText" data-i18n="mgNavSay">Speak or type to your companion</label><input id="memoryNavText" type="text" maxlength="300"><button type="submit" data-i18n="mgSend">Send</button><button type="button" id="memoryNavMic" data-i18n="mgMic">Speak</button><button type="button" id="memoryNavRest" data-i18n="needRest">I need to rest</button><button type="button" id="memoryNavConfused" data-i18n="mgConfused">I'm confused</button></form></details>
 
   <div class="nav-fabs">
@@ -296,6 +304,7 @@
 <script src="js/guide.js"></script>
 <script src="js/inbox.js"></script>
 <script src="js/sim.js"></script>
+<script src="js/safety-policy.js"></script>
 <script src="js/garden.js"></script>
 <script src="js/memory.js"></script>
 <script src="js/memory-ui.js"></script>

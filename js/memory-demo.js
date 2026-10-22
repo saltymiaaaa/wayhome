@@ -12,7 +12,7 @@
    for(let i=1;i<=11;i++)for(let j=1;j<=11;j++){const p=WH.node(i,j),r=G.buildRoute(p);if(G.buildSteps(r).some(st=>st.lm?.id===market.id)&&(!candidate||r.total<candidate.total))candidate={p,total:r.total};}
    if(!candidate){WH.toast(T('mgDemoMissing'),'warn');return false;}
    WH.closePrompt(true);WH.Sim.abortCall();WH.famLayer(null);S.gpsLost=false;WH.MemorySafety.lastKnown=null;
-   WH.setAvatar(candidate.p.x,candidate.p.z,0,false);G.start();G.paused=true;return true;
+   WH.setAvatar(candidate.p.x,candidate.p.z,0,false);G.start({viewMode:'presenter'});G.paused=true;return true;
  };
  P.landmark=function(){if(!P.route())return false;const G=WH.Guide;G.idx=G.steps.findIndex(st=>st.lm?.id===P.market().id);G.s=G.cur().s;const p=G.posAt(G.route,G.s);WH.setAvatar(p.x,p.z,undefined,false);G.paused=false;G.enter(G.cur());return true;};
  P.go=function(step){if(S.sosActive)return;step=Math.max(0,Math.min(8,step));WH.MemorySafety.clear();WH.Sim.abortCall();WH.famLayer(null);WH.closePrompt(true);
@@ -21,7 +21,7 @@
    if(step===0)WH.Memory.open();
    if(step===1){const market=P.market();if(market){WH.Memory.open();WH.Memory.activity('places',market.id);}else WH.toast(T('mgDemoMissing'),'warn');}
    if(step===2){WH.Memory.open();const market=P.market();if(market&&!P.grown){WH.Memory.activity('places',market.id);WH.Memory.finish();P.grown=true;}WH.Memory.garden();}
-   if(step===3){WH.Memory.open();WH.MemorySafety.check();}
+   if(step===3){WH.Memory.open();WH.MemorySafety.check('divergence');}
    if(step===4){if(P.route()){WH.Guide.paused=true;WH.MemorySafety.offer();}}
    if(step===5)P.landmark();
    if(step===6&&P.landmark()){WH.Guide.answerNo();WH.closePrompt(true);WH.Guide.answerNo();}

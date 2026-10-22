@@ -107,13 +107,13 @@
 
   /* ───────────── engine ───────────── */
   const G = (WH.Guide = {
-    active: false, route: null, steps: [], idx: 0, s: 0, state: 'idle', speedMul: 1, waitT: 0, fails: 0, detour: null, paused: false, practice: false
+    active: false, route: null, steps: [], idx: 0, s: 0, state: 'idle', speedMul: 1, waitT: 0, fails: 0, detour: null, paused: false, practice: false, viewMode:'presenter'
   });
   const BASE_V = 3.4;
 
   G.start = function (opts) {
     opts = opts || {};
-    G.practice = !!opts.practice;
+    G.practice = !!opts.practice; G.viewMode=opts.viewMode||G.viewMode||'presenter';
     S.guiding = true; G.active = true; G.fails = 0; G.paused = false;
     WH.go('nav');
     WH.closePrompt && WH.closePrompt(true);
@@ -125,6 +125,7 @@
   G.plan = function (isReroute) {
     G.route = buildRoute(S.pos); G.steps = buildSteps(G.route); G.idx = 0; G.s = 0; G.state = 'brief'; G.detour = null;
     G.waitT = 3.4;
+    G.hasApprovedLandmark=G.steps.some(st=>st.type==='look');
     WH.worlds.forEach((w) => { w.setRoute(G.route.pts); w.setCrossing(null, false); });
     const first = G.route.pts[1] || G.route.pts[0];
     const p0 = G.route.pts[0], dx = first.x - p0.x, dz = first.z - p0.z;
@@ -222,6 +223,8 @@
     if (!arrived) WH.Sim && WH.Sim.onGuideAborted && WH.Sim.onGuideAborted();
     WH.refresh();
   };
+  G.cancel=function(){if(!G.active)return;G.paused=true;WH.devPrompt({tone:'amber',icon:'close',title:T('mgCancelGuide'),text:T('mgCancelGuideText'),buttons:[{label:T('mgKeepGuiding'),tone:'green',fn:()=>{G.paused=false;G.renderAll();}},{label:T('mgCancelGuide'),tone:'ghost',fn:()=>{WH.MemoryData.event('guidance-cancelled',G.state);WH.SafetyPolicy.resolve('guidance-cancelled');G.stop(false);}}]});};
+  G.setView=function(mode){G.viewMode=mode==='wearer'?'wearer':'presenter';const screen=$('#scr-nav');screen.dataset.navView=G.viewMode;WH.$$('#navViewSwitch button').forEach(b=>b.classList.toggle('on',b.dataset.navView===G.viewMode));G.renderAll();};
 
   /* demo hooks */
   G.wrongTurn = function () {
@@ -236,10 +239,12 @@
     const cum = [0, dist(pts[0], pts[1]), 0]; cum[2] = cum[1] + dist(pts[1], pts[2]);
     G.detour = { pts, cum, total: cum[2], s: 0, warned: false, hold: 0 };
     G.state = 'detour'; G.renderAll();
+    WH.SafetyPolicy.schedule('route-divergence',{reason:'divergence'});
     WH.sysLog('Demo: wrong turn injected', 'warn');
   };
   G.reroute = function () {
     G.plan(true);
+    if(WH.SafetyPolicy.incident?.kind==='route-divergence')WH.SafetyPolicy.resolve('rerouted');
     WH.sysLog('Guide: off route, rerouting from current position', 'warn');
     WH.Sim && WH.Sim.onReroute && WH.Sim.onReroute();
   };
@@ -278,7 +283,7 @@
       G.holdT += dt;
       if (G.holdT > 3.5 && !G.holdAsked) {
         G.holdAsked = true;
-        WH.MemorySafety.check();
+        WH.MemorySafety.check('stopped',{nonurgent:true});
       }
     }
   };
@@ -302,9 +307,10 @@
   };
   G.renderAll = function () {
     if (!G.active) return;
-    G.renderTop(); G.renderBottom(); G.updateDyn();
+    G.renderTop(); G.renderBottom(); G.renderWearer(); G.updateDyn();
     $$speed();
   };
+  G.renderWearer=function(){const root=$('#wearerNav');if(!root||!G.active)return;const st=G.cur(),n=G.nextInfo()||{};let main=n.main||T('mgRoutePaused'),sub=n.sub||'',arrow='↑',status=G.hasApprovedLandmark?T('mgLandmarkAvailable'):T('mgNoLandmark');let photo='',caption='';if(S.gpsLost){main=T('mgLow');sub=WH.MemorySafety?.lastKnown?T('mgLast',{pos:`${WH.MemorySafety.lastKnown.x.toFixed(1)}, ${WH.MemorySafety.lastKnown.z.toFixed(1)}`,time:new Date(WH.MemorySafety.lastKnown.at).toLocaleTimeString(S.lang)}):T('mgSimulation');arrow='?';status=T('mgLocationUncertain');}else if(G.paused){main=T('mgRoutePaused');sub=T('mgHandover');arrow='‖';}else if(G.state==='detour'){main=T('offRoute');sub=T('offRouteSub');arrow='↶';status=T('mgRouteDivergence');}else if(st?.type==='turn')arrow=st.dir==='left'?'←':'→';else if(st?.type==='arrive')arrow='⌂';else if(st?.type==='look'){arrow='●';photo=st.lm.photo||landmarkArt(st.lm.type,st.lm.name);caption=st.lm.name;}else if(st?.type==='cross')arrow='◇';$('#wearerNavStatus').textContent=status;$('#wearerNavArrow').textContent=arrow;$('#wearerNavMain').textContent=main;$('#wearerNavSub').textContent=sub;const fig=$('#wearerNavLandmark');fig.hidden=!photo;if(photo){$('#wearerNavPhoto').src=photo;$('#wearerNavPhoto').alt=caption;$('#wearerNavCaption').textContent=caption;}};
   function $$speed() { WH.$$('#navSpeed button').forEach((b) => b.classList.toggle('on', +b.dataset.sp === G.speedMul)); }
 
   G.renderTop = function () {
@@ -362,7 +368,10 @@
 
   G.bind = function () {
     $('#navSkip').onclick = () => G.skip();
-    $('#navEnd').onclick = () => { WH.sysLog('Guide: ended by user', 'warn'); G.stop(false); };
+    $('#navEnd').onclick = () => G.cancel();
+    $('#wearerNavCancel').onclick=()=>G.cancel();
+    $('#wearerNavHelp').onclick=()=>{WH.MemorySafety.reason='help';WH.MemorySafety.offer(T('mgReasonHelp'));};
+    WH.$$('#navViewSwitch button').forEach(b=>b.onclick=()=>G.setView(b.dataset.navView));
     WH.$$('#navSpeed button').forEach((b) => (b.onclick = () => { G.speedMul = +b.dataset.sp; $$speed(); }));
     $('#navCall').onclick = () => WH.MemorySafety.handover();
     $('#navSos').onclick = () => WH.Sim.pressSos();
@@ -382,6 +391,7 @@
       if(a==='confused')return WH.MemorySafety.confused();
       if (a === 'wrong') G.wrongTurn(); else if (a === 'stop') G.holdStop(); else if (a === 'fall') WH.Sim.fall(false); else if (a === 'hr') WH.Sim.hrAbnormal('high'); else if (a === 'night') WH.Sim.toggleNight();
     }));
+    G.setView(G.viewMode);
   };
   WH.Guide.posAt = posAt; WH.Guide.buildRoute = buildRoute; WH.Guide.buildSteps=buildSteps; WH.Guide.snapToRoad = snapToRoad;
 })();

@@ -4,8 +4,8 @@
   const clone = x => JSON.parse(JSON.stringify(x));
   const seedPlaces=clone(WH.S.landmarks);
   const D = WH.MemoryData = { media: new Map(), urls: new Map(), persistent: true };
-  D.defaults = () => ({version: 1, prefs: {name:'Sprout', language:'en', theme:'sage', voice:true, style:'gentle', favorites:['places'], checkDelay:15},
-    people:[{id:'sample-mei', name:'Mei', relationshipKey:'mgDaughter', storyKey:'mgMeiStory', moreKey:'mgMeiMore', approved:true, sample:true}],
+  D.defaults = () => ({version: 1, prefs: {name:'Sprout', language:'en', theme:'sage', voice:true, style:'gentle', favorites:['places'], checkDelay:15,nonurgentDelay:8},
+    people:[{id:'sample-mei', name:'Mei', relationshipKey:'mgDaughter', storyKey:'mgMeiStory', moreKey:'mgMeiMore', relatedPlaceId:'l3',relatedMusicId:'sample-music',approved:true, sample:true}],
     places:seedPlaces.map(p => ({...p, name:p.id === 'l3' ? 'Morning Market' : p.name,nameKey:p.id==='l3'?'mgMarket':null, storyKey:'mgPlaceStory', memoryApproved:true, navigationApproved:true, sample:true, waypoint:{i:p.i,j:p.j}})),
     music:[{id:'sample-music',nameKey:'mgSong',storyKey:'mgNoAudio',approved:true,sample:true}],
     routines:[{id:'sample-routine',nameKey:'mgOutside',stepsKeys:['mgShoes','mgKeys','mgJacket'],approved:true,sample:true}],
@@ -30,7 +30,7 @@
   D.event=function(type,detail){D.state.events.push({type,detail:detail||'',at:new Date().toISOString()});D.state.events=D.state.events.slice(-300);D.save();};
   D.grow=function(kind='flower'){if(!['flower','tree','butterfly'].includes(kind))return;D.state.garden.push({id:'g-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),kind,at:Date.now()});D.save();};
   D.complete=function(kind){D.state.usage[kind]=(D.state.usage[kind]||0)+1;D.state.lastActivity=kind;D.grow();D.event('activity',kind);};
-  D.recommend=function(){return ['people','places','music','routines','garden'].filter(k=>k!==D.state.lastActivity).sort((a,b)=>((D.state.usage[b]||0)+(D.state.prefs.favorites.includes(b)?3:0))-((D.state.usage[a]||0)+(D.state.prefs.favorites.includes(a)?3:0)))[0];};
+  D.recommend=function(){return ['journey','people','places','music','routines','garden'].filter(k=>k!==D.state.lastActivity).sort((a,b)=>((D.state.usage[b]||0)+(D.state.prefs.favorites.includes(b)?3:0))-((D.state.usage[a]||0)+(D.state.prefs.favorites.includes(a)?3:0)))[0];};
   D.url=id=>id?D.urls.get(id)||'':'';
   D.openDB=function(){return new Promise((resolve,reject)=>{if(!window.indexedDB)return reject(Error('storage'));const q=indexedDB.open('wayhome-media',1);q.onupgradeneeded=()=>q.result.createObjectStore('media');q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error);});};
   D.hydrate=async function(){try{D.db=await D.openDB();await new Promise((resolve,reject)=>{const tx=D.db.transaction('media');const q=tx.objectStore('media').openCursor();q.onsuccess=()=>{const c=q.result;if(c){D.urls.set(c.key,URL.createObjectURL(c.value));c.continue();}else resolve();};q.onerror=()=>reject(q.error);});D.refresh();}catch(e){D.mediaUnavailable=true;}};

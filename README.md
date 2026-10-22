@@ -24,9 +24,20 @@ Sprout is a customizable, gently animated companion with happy, curious, thinkin
 - **My Happy Places:** approved place pictures and personal stories. These interactions never start a route or change navigation permissions.
 - **Music & Memories:** optional album art, authorized local audio and mood choices. No recording means no playback button. Exit, completion and safety interruptions stop audio.
 - **Everyday Moments:** tap up to eight caregiver-defined routine steps in any order; Undo removes the last selection. No drag-and-drop, scores or incorrect-answer feedback.
+- **Memory Journeys:** an optional sequence links an approved family photograph, caregiver story, related place and familiar song. Every step can be skipped, and there is no score, recall test or requirement to finish.
 - **Memory Garden:** participation grows flowers; add trees and butterflies or visit existing objects. Older garden objects remain available through Back/Next. Progress never decays.
 
 Recommendations use chosen activities and caregiver favorites, excluding the most recently completed activity. Response times, uncertainty and skipped activities are not used to estimate ability or severity.
+
+## Safety and check-ins
+
+`safety-policy.js` is the single escalation engine for geofence, unanswered check-in, stopped-walking and route-divergence concerns. Each incident records and displays its reason. Geofence incidents retain the configured emergency stage; non-emergency check-in and route concerns may notify or call caregivers but cannot dispatch the emergency stage.
+
+Check-ins explain their trigger in neutral language, such as stopped walking, an unusual area or a wearer-requested help action. They explicitly avoid diagnosing confusion. Caregivers can set a separate 0–120 second delay for nonurgent check-ins under **Memory Library → Companion preferences**.
+
+## Navigation views
+
+Guidance offers **3D Presenter View** and **Wearer View**. Both use the same route, step and progress state. Wearer View shows one arrow, one instruction, an approved landmark photo when one is available, and clear Help and Cancel controls. It also gives distinct states for no approved landmark, uncertain GPS, route divergence and paused or cancelled guidance.
 
 ## Caregiver library and storage
 

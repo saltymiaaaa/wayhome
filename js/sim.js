@@ -21,6 +21,7 @@
   /* ───────────── escalation ladder ───────────── */
   const Esc = (Sim.Esc = { on: false, vmin: 0, level: 0, noAnswer: 0, reaskT: 0, prompted: false });
   Sim.renderLadder = function () {
+    if(WH.SafetyPolicy)return WH.SafetyPolicy.render();
     const box = $('#pLadder'); if (!box) return;
     if (!Esc.on) {
       box.innerHTML = `<div class="lad idle">${ic('shield', 20)}<span>${T('ladIdle', { r: WH.effRadiusKm().toFixed(2) })}</span></div>`;
@@ -44,6 +45,7 @@
     WH.feed(T('f_outside', { n: nm() }), 'amber', 'alert');
     WH.beep('alert'); WH.buzz('strong');
     Sim.renderLadder(); WH.refresh();
+    WH.SafetyPolicy?.begin('geofence',{reason:'outside'});
     askGoHome();
   }
   function escEnd(reason) {
@@ -51,10 +53,11 @@
     Esc.on = false; Esc.level = 0; Esc.vmin = 0;
     WH.sysLog(T('log_resolved') + ' (' + reason + ')', 'ok');
     Sim.renderLadder(); WH.refresh();
+    WH.SafetyPolicy?.resolve(reason);
   }
   function askGoHome() {
     if (!Esc.on || S.guiding || S.sosActive || WH.hasPrompt()) return;
-    if (WH.MemorySafety) { Esc.prompted=true; WH.MemorySafety.check(); return; }
+    if (WH.MemorySafety) { Esc.prompted=true; WH.MemorySafety.check('outside',{nonurgent:true}); return; }
     Esc.prompted = true;
     WH.devPrompt({
       tone: 'blue', icon: 'nav', title: T('breachTitle'), text: T('breachText', { n: nm() }), secs: 16, haptic: 'strong', beep: 'chime', say: T('v_breach', { n: nm() }),
@@ -66,6 +69,7 @@
     });
   }
   function escStep(dt) {
+    if(WH.SafetyPolicy){if(!Esc.on||S.sosActive)return;if(!S.guiding)Esc.vmin+=dt*2.6;WH.SafetyPolicy.tick(dt);Esc.level=(WH.SafetyPolicy.index||0)+1;Sim.renderLadder();return;}
     if (!Esc.on || S.sosActive) return;
     if (S.guiding) { return; }
     Esc.vmin += dt * 2.6;
@@ -223,6 +227,7 @@
   };
   Sim.sos = function (reason) {
     if (S.sosActive) return;
+    WH.SafetyPolicy?.emergency(reason);
     S.sosActive = true; WH.closeChat(); stopWalkers();
     WH.buzz('sos'); WH.beep('siren');
     WH._chipLocked = true; WH.setChip('SOS', 'red');
@@ -496,6 +501,7 @@
     WH.closePrompt(true); WH.closeChat(); WH.famLayer(null); $('#navPrompt').innerHTML = '';
     if (call) { clearInterval(call.iv); clearTimeout(call.auto); call = null; }
     Wander.active = false; Esc.on = false; Esc.level = 0; Esc.vmin = 0; Esc.reaskT = 0;
+    WH.SafetyPolicy?.reset();
     Object.keys(Health).forEach((k) => delete Health[k]);
     Object.assign(S, { out: false, sosActive: false, guiding: false, inCall: false, night: false, clockOffset: 0, gpsLost: false, removed: false, batt: 84, hr: 72, hrBase: 72, hrTarget: null, askCount: {} });
     S.meds.forEach((m, i) => (m.done = i === 0)); S.trail = []; WH.worlds.forEach((w) => w.setTrail([]));
@@ -530,7 +536,7 @@
   /* ───────────── director panel ───────────── */
   Sim.buildDirector = function () {
     const groups = [
-      { t: 'dg_move', items: [['walk', 'dir_wander', () => Sim.wander()], ['pin', 'dir_teleport', () => Sim.teleportFar()], ['clock', 'dir_ffwd', () => { if (Esc.on) { Esc.vmin += 8; WH.sysLog('+8 virtual minutes', 'warn'); } else WH.toast(T('t_needOut'), 'warn'); }]] },
+      { t: 'dg_move', items: [['walk', 'dir_wander', () => Sim.wander()], ['pin', 'dir_teleport', () => Sim.teleportFar()], ['clock', 'dir_ffwd', () => { if (Esc.on) { Esc.vmin += 8;if(WH.SafetyPolicy.incident?.kind==='geofence')WH.SafetyPolicy.elapsed+=8; WH.sysLog('+8 virtual minutes', 'warn'); } else WH.toast(T('t_needOut'), 'warn'); }]] },
       { t: 'dg_safety', items: [['alert', 'dir_fall', () => Sim.fall(false)], ['siren', 'dir_fallc', () => Sim.fall(true)], ['pulse', 'dir_hrh', () => Sim.hrAbnormal('high')], ['heart', 'dir_hrl', () => Sim.hrAbnormal('low')]] },
       { t: 'dg_voice', items: [['mic', 'dir_lost', () => Sim.sayPhrase('p3')], ['mic', 'dir_fellsay', () => Sim.sayPhrase('p1')], ['mic', 'dir_helpsay', () => Sim.sayPhrase('p2')], ['pill', 'dir_forgot', () => Sim.sayPhrase('p4')]] },
       { t: 'dg_daily', items: [['pill', 'dir_med', () => Sim.medDue()]] },
