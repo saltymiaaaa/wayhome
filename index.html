@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WayHome | Safe Return Companion (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-screen="landing">
+
+<div class="toasts" id="toasts"></div>
+
+<!-- ═════════════ LANDING ═════════════ -->
+<section class="screen active" id="scr-landing">
+  <div class="bg-world" id="bgWorld"></div>
+  <div class="bg-veil"></div>
+  <header class="topbar">
+    <div class="brand"><span class="logo" data-ic="home" data-sz="24"></span><span>WayHome</span></div>
+    <div class="top-right">
+      <button class="chip-btn" id="btnIdeas"><span data-ic="bulb" data-sz="16"></span><span data-i18n="ideas">Feature ideas</span></button>
+      <div class="seg lang" id="langSeg"><button data-lang="en">EN</button><button data-lang="vi">VI</button><button data-lang="id">ID</button></div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow"><i></i><span data-i18n="eyebrow">Interactive prototype</span></span>
+      <h1><span data-i18n="h1a">Never lost.</span><br><span class="grad" data-i18n="h1b">Always guided home.</span></h1>
+      <p class="lead" data-i18n="lead">A calm companion on the wrist or around the neck for people with dementia. It watches the safe zone, talks them home step by step with landmark photos, senses falls and heart trouble, and keeps the family in the loop.</p>
+
+      <div class="role-title" data-i18n="whoAreYou">Who is using this screen?</div>
+      <div class="roles">
+        <button class="role r-family" id="roleFamily">
+          <span class="role-ic" data-ic="users" data-sz="40"></span>
+          <span class="role-name" data-i18n="roleFamily">I am family</span>
+          <span class="role-desc" data-i18n="roleFamilyD">Set up the profile, home, safe zone, contacts and the AI's personal phrases.</span>
+          <span class="role-go"><span data-i18n="startSetup">Start setup</span> <span data-ic="right" data-sz="16"></span></span>
+        </button>
+        <button class="role r-elder" id="roleElder">
+          <span class="role-ic" data-ic="heart" data-sz="40"></span>
+          <span class="role-name" data-i18n="roleElder">I wear the device</span>
+          <span class="role-desc" data-i18n="roleElderD">Giant buttons. Go home, call family, ask the assistant, SOS.</span>
+          <span class="role-go"><span data-i18n="openDevice">Open device</span> <span data-ic="right" data-sz="16"></span></span>
+        </button>
+      </div>
+      <button class="stage-link" id="roleStage"><span data-ic="spark" data-sz="20"></span><span><b data-i18n="roleStage">Live demo stage</b> <em data-i18n="roleStageD">Elder device and family phone side by side, with a button for every scenario.</em></span><span data-ic="right" data-sz="16"></span></button>
+    </div>
+    <div class="hero-watch"><canvas id="heroWatch"></canvas><div class="hero-hint" data-i18n="dragHint">Drag to turn the device</div></div>
+  </div>
+
+  <div class="feature-strip">
+    <div class="ft"><span data-ic="image" data-sz="22"></span><div><b data-i18n="ft1">Landmark photo guide</b><span data-i18n="ft1d">"Do you see this gate? Turn right."</span></div></div>
+    <div class="ft"><span data-ic="volume" data-sz="22"></span><div><b data-i18n="ft2">Voice-first companion</b><span data-i18n="ft2d">Calm, personal, knows their words</span></div></div>
+    <div class="ft"><span data-ic="pulse" data-sz="22"></span><div><b data-i18n="ft3">Fall and heart sensing</b><span data-i18n="ft3d">Alerts family without a button press</span></div></div>
+    <div class="ft"><span data-ic="ladder" data-sz="22"></span><div><b data-i18n="ft4">Escalation ladder</b><span data-i18n="ft4d">Gentle first, loud only when needed</span></div></div>
+  </div>
+</section>
+
+<!-- ═════════════ FAMILY SETUP ═════════════ -->
+<section class="screen" id="scr-setup">
+  <header class="topbar">
+    <div class="brand"><span class="logo" data-ic="settings" data-sz="24"></span><span data-i18n="setupTitle">Family setup</span></div>
+    <div class="top-right">
+      <div class="seg lang" data-lang-seg><button data-lang="en">EN</button><button data-lang="vi">VI</button><button data-lang="id">ID</button></div>
+      <button class="chip-btn" data-go="landing"><span data-ic="close" data-sz="16"></span><span data-i18n="exit">Exit</span></button>
+    </div>
+  </header>
+  <div class="setup-wrap">
+    <div class="setup-main">
+      <nav class="stepper" id="stepper"></nav>
+      <div class="panel" id="setupPanel"></div>
+      <div class="setup-nav">
+        <button class="btn ghost" id="setupBack"><span data-ic="left" data-sz="18"></span><span data-i18n="back">Back</span></button>
+        <button class="btn primary" id="setupNext"><span data-i18n="next">Continue</span><span data-ic="right" data-sz="18"></span></button>
+      </div>
+    </div>
+    <aside class="setup-side">
+      <div class="map-card">
+        <div class="map-head"><span id="setupMapTitle"></span><span class="map-badge" id="setupMapBadge"></span></div>
+        <div class="map-box" id="setupMap"></div>
+        <div class="map-foot" id="setupMapFoot"></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ═════════════ LIVE STAGE ═════════════ -->
+<section class="screen" id="scr-stage">
+  <header class="topbar">
+    <div class="brand"><span class="logo" data-ic="home" data-sz="24"></span><span>WayHome</span><span class="pill live"><i></i><span data-i18n="demoLive">Prototype demo</span></span></div>
+    <div class="top-right">
+      <div class="seg" id="viewSeg"><button data-view="elder" data-i18n="viewElder">Device</button><button data-view="both" data-i18n="viewBoth">Both</button><button data-view="family" data-i18n="viewFamily">Family</button><button data-view="inbox"><span data-i18n="viewInbox">Inbox</span><b class="ib-badge" id="ibBadge" style="display:none">0</b></button></div>
+      <div class="seg lang" data-lang-seg><button data-lang="en">EN</button><button data-lang="vi">VI</button><button data-lang="id">ID</button></div>
+      <button class="chip-btn" id="btnSetupAgain"><span data-ic="settings" data-sz="16"></span><span data-i18n="editSetup">Edit setup</span></button>
+      <button class="chip-btn" data-go="landing"><span data-ic="close" data-sz="16"></span><span data-i18n="exit">Exit</span></button>
+    </div>
+  </header>
+
+  <div class="stage" id="stage" data-view="both">
+    <!-- director -->
+    <aside class="director" id="director">
+      <div class="dir-head"><span class="rec"></span><b data-i18n="director">Demo director</b><button class="dir-toggle" id="dirToggle" data-ic="close" data-sz="16"></button></div>
+      <p class="dir-sub" data-i18n="directorSub">Trigger real-life moments without leaving the room.</p>
+      <div class="dir-groups" id="dirGroups"></div>
+      <div class="dir-log-head"><span data-ic="chart" data-sz="14"></span><span data-i18n="sysLog">System brain</span></div>
+      <div class="dir-log" id="sysLog"></div>
+    </aside>
+
+    <!-- elder device -->
+    <div class="dev-col" id="devCol">
+      <div class="dev-label"><span data-ic="watch" data-sz="16"></span><span data-i18n="devLabel">WayHome band (wearer)</span></div>
+      <div class="dev-fit" id="devFit">
+        <div class="device" id="device">
+          <div class="strap s-top"></div><div class="strap s-bot"></div>
+          <div class="crown"></div><div class="sidebtn"></div>
+          <div class="haptic-ring"></div><div class="haptic-ring r2"></div>
+          <div class="dscreen" id="dscreen">
+            <div class="d-status">
+              <span class="d-time" id="dTime">09:41</span>
+              <span class="d-badges">
+                <span class="badge gps" id="dGps"><span data-ic="gps" data-sz="14"></span>GPS</span>
+                <span class="badge hr" id="dHr"><span data-ic="heart" data-sz="14"></span><b id="dHrV">72</b></span>
+                <span class="badge bat" id="dBat"><span data-ic="battery" data-sz="16"></span><b id="dBatV">84%</b></span>
+              </span>
+            </div>
+            <div class="d-hello">
+              <div class="d-avatar" id="dAvatar">H</div>
+              <div><div class="d-greet" id="dGreet">Hello</div><div class="d-date" id="dDate"></div></div>
+            </div>
+            <div class="d-safe ok" id="dSafe"><span data-ic="shield" data-sz="24"></span><span id="dSafeTxt">You are safe</span></div>
+            <div class="d-mapwrap"><div class="d-map" id="devMap"></div><div class="d-map-tag" id="devMapTag"></div></div>
+
+            <button class="bigbtn b-home" id="bHome"><span class="bb-ic" data-ic="home" data-sz="52"></span><span class="bb-tx"><b data-i18n="bHome">GO HOME</b><i data-i18n="bHomeD">I will guide you</i></span></button>
+            <div class="bb-row">
+              <button class="bigbtn b-call" id="bCall"><span class="bb-ic" data-ic="phone" data-sz="40"></span><span class="bb-tx"><b data-i18n="bCall">CALL</b><i data-i18n="bCallD">Family</i></span></button>
+              <button class="bigbtn b-ask" id="bAsk"><span class="bb-ic" data-ic="assistant" data-sz="40"></span><span class="bb-tx"><b data-i18n="bAsk">TALK</b><i data-i18n="bAskD">to me</i></span></button>
+            </div>
+            <button class="bigbtn b-sos" id="bSos"><span class="bb-ic" data-ic="sos" data-sz="40"></span><span class="bb-tx"><b data-i18n="bSos">HELP / SOS</b><i data-i18n="bSosD">Tell everyone now</i></span></button>
+            <div class="d-remind" id="dRemind"></div>
+
+            <div class="d-layer" id="devLayer"></div>
+            <div class="d-sheet" id="chatSheet">
+              <div class="cs-head"><div class="cs-ava" data-ic="assistant" data-sz="26"></div><div><b id="csName">Na</b><span data-i18n="csSub">Your companion</span></div><button class="cs-x" id="csClose" data-ic="close" data-sz="22"></button></div>
+              <div class="cs-body" id="csBody"></div>
+              <div class="cs-wave" id="csWave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="cs-say" id="csSay"></div>
+              <div class="cs-input"><input id="csInput" type="text" data-i18n-ph="typeHere" placeholder="Type here"><button id="csMic" data-ic="mic" data-sz="24"></button><button id="csSend" data-ic="send" data-sz="22"></button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- family phone -->
+    <div class="fam-col" id="famCol">
+      <div class="dev-label"><span data-ic="users" data-sz="16"></span><span data-i18n="famLabel">Family phone (caregiver)</span></div>
+      <div class="phone-fit"><div class="phone" id="phone">
+        <div class="notch"></div>
+        <div class="pscreen" id="pscreen">
+          <div class="p-banners" id="pBanners"></div>
+          <div class="p-head">
+            <div><div class="p-hi" data-i18n="famHi">Caring for</div><div class="p-name" id="pName">Grandma Li</div></div>
+            <span class="p-chip ok" id="pChip">Safe</span>
+          </div>
+          <div class="p-map"><div id="famMap" class="p-mapbox"></div><div class="p-maptag" id="famMapTag"></div></div>
+          <div class="p-stats">
+            <div class="ps"><span data-ic="heart" data-sz="18"></span><b id="pHr">72</b><i>bpm</i></div>
+            <div class="ps"><span data-ic="pin" data-sz="18"></span><b id="pDist">0.1</b><i>km</i></div>
+            <div class="ps"><span data-ic="battery" data-sz="18"></span><b id="pBat">84</b><i>%</i></div>
+          </div>
+          <div class="p-ecg"><canvas id="ecg" width="320" height="56"></canvas><span class="ecg-tag" id="ecgTag">Normal</span></div>
+          <div class="p-ladder" id="pLadder"></div>
+          <div class="p-actions">
+            <button class="pa" id="pCall"><span data-ic="phone" data-sz="22"></span><b data-i18n="paCall">Call</b></button>
+            <button class="pa" id="pMsg"><span data-ic="volume" data-sz="22"></span><b data-i18n="paMsg">Voice note</b></button>
+            <button class="pa" id="pRing"><span data-ic="ring" data-sz="22"></span><b data-i18n="paRing">Ring band</b></button>
+            <button class="pa" id="pCheck"><span data-ic="eye" data-sz="22"></span><b data-i18n="paCheck">Check in</b></button>
+          </div>
+          <div class="p-feed-head"><b data-i18n="activity">Activity</b></div>
+          <div class="p-feed" id="pFeed"></div>
+          <div class="p-layer" id="pLayer"></div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <!-- family inbox: how contacts receive messages -->
+    <div class="inbox-col" id="inboxCol"><div class="dev-label"><span data-ic="chat" data-sz="16"></span><span data-i18n="inboxTitle">How the family receives alerts</span></div><div class="ib-tabs" id="ibTabs"></div><div class="ib-body" id="ibBody"></div></div>
+  </div>
+</section>
+
+<!-- ═════════════ GUIDED WALK (FULL SCREEN) ═════════════ -->
+<section class="screen nav" id="scr-nav">
+  <div class="nav-world" id="navWorld"></div>
+  <div class="nav-vignette"></div>
+
+  <div class="nav-top">
+    <div class="nav-turn" id="navTurn">
+      <div class="nt-ic" id="ntIc"></div>
+      <div class="nt-tx"><div class="nt-main" id="ntMain"></div><div class="nt-sub" id="ntSub"></div></div>
+      <div class="nt-dist" id="ntDist"></div>
+    </div>
+    <div class="nav-tools">
+      <div class="nav-prog" id="navProg"></div>
+      <div class="nav-btns">
+        <button class="nbtn skip" id="navSkip"><span data-ic="skip" data-sz="22"></span><span data-i18n="skipStep">Skip step</span></button>
+        <div class="seg speed" id="navSpeed"><button data-sp="1">1x</button><button data-sp="2">2x</button><button data-sp="4">4x</button></div>
+        <button class="nbtn end" id="navEnd"><span data-ic="close" data-sz="20"></span><span data-i18n="endGuide">End</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="haptic-edge l" id="hapL"></div><div class="haptic-edge r" id="hapR"></div>
+
+  <div class="nav-speech" id="navSpeech"><div class="cs-wave live"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="ns-name" id="nsName">Na</div><div class="ns-tx" id="nsTx"></div></div>
+
+  <div class="nav-mini"><div id="navMini"></div><span id="navMiniTag"></span></div>
+
+  <div class="nav-bottom" id="navBottom"></div>
+
+  <div class="nav-fabs">
+    <button class="fab call" id="navCall"><span data-ic="phone" data-sz="28"></span></button>
+    <button class="fab sos" id="navSos"><span data-ic="sos" data-sz="28"></span></button>
+  </div>
+
+  <div class="nav-prompt" id="navPrompt"></div>
+  <div class="nav-director" id="navDirector"></div>
+  <div class="arrive" id="arrive"></div>
+</section>
+
+<!-- ═════════════ MODALS ═════════════ -->
+<div class="modal" id="mdLandmark">
+  <div class="modal-card">
+    <h3><span data-ic="pin" data-sz="22"></span><span data-i18n="lmNew">New familiar landmark</span></h3>
+    <p class="muted" data-i18n="lmHelp">Places Grandma Li knows by sight. The assistant shows the photo and asks "Do you see this?".</p>
+    <div class="lm-types" id="lmTypes"></div>
+    <label data-i18n="lmName">Name</label>
+    <input type="text" id="lmName" data-i18n-ph="lmNamePh" placeholder="e.g. Morning market">
+    <label data-i18n="lmPhoto">Photo</label>
+    <div class="lm-photo">
+      <img id="lmPrev" alt="">
+      <div class="lm-photo-actions">
+        <label class="btn ghost file"><span data-ic="camera" data-sz="18"></span><span data-i18n="lmUpload">Upload real photo</span><input type="file" id="lmFile" accept="image/*"></label>
+        <span class="muted small" data-i18n="lmSample">A sample illustration is used until you upload a real photo.</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="lmCancel" data-i18n="cancel">Cancel</button>
+      <button class="btn primary" id="lmSave"><span data-ic="check" data-sz="18"></span><span data-i18n="lmAdd">Add landmark</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="mdIdeas">
+  <div class="modal-card wide">
+    <h3><span data-ic="bulb" data-sz="22"></span><span data-i18n="ideasTitle">More ideas to make it real</span></h3>
+    <div class="ideas" id="ideasList"></div>
+    <div class="modal-actions"><button class="btn primary" id="ideasClose" data-i18n="close">Close</button></div>
+  </div>
+</div>
+
+<div class="modal" id="mdPair">
+  <div class="modal-card">
+    <h3><span data-ic="qr" data-sz="22"></span><span data-i18n="pairTitle">Connect family phone</span></h3>
+    <p class="muted" id="pairWho"></p>
+    <div class="qr-box"><canvas id="qrCanvas" width="180" height="180"></canvas><div class="qr-scan"></div></div>
+    <p class="muted small" data-i18n="pairHelp">On their phone: open the WayHome Family app and scan this code. Alerts, live location and calls will connect.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="pairCancel" data-i18n="cancel">Cancel</button>
+      <button class="btn primary" id="pairDone"><span data-ic="link" data-sz="18"></span><span data-i18n="pairSim">Simulate scan</span></button>
+    </div>
+  </div>
+</div>
+
+<script src="js/vendor/three.min.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/i18n_id.js"></script>
+<script src="js/art.js"></script>
+<script src="js/world.js"></script>
+<script src="js/watch3d.js"></script>
+<script src="js/app.js"></script>
+<script src="js/setup.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/inbox.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>
