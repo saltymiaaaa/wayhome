@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/memory.css">
 </head>
 <body data-screen="landing">
 
@@ -78,6 +79,7 @@
       </div>
     </div>
     <aside class="setup-side">
+      <button class="btn primary" data-memory-library data-i18n="mgLibrary">Memory Library</button>
       <div class="map-card">
         <div class="map-head"><span id="setupMapTitle"></span><span class="map-badge" id="setupMapBadge"></span></div>
         <div class="map-box" id="setupMap"></div>
@@ -95,6 +97,7 @@
       <div class="seg" id="viewSeg"><button data-view="elder" data-i18n="viewElder">Device</button><button data-view="both" data-i18n="viewBoth">Both</button><button data-view="family" data-i18n="viewFamily">Family</button><button data-view="inbox"><span data-i18n="viewInbox">Inbox</span><b class="ib-badge" id="ibBadge" style="display:none">0</b></button></div>
       <div class="seg lang" data-lang-seg><button data-lang="en">EN</button><button data-lang="vi">VI</button><button data-lang="id">ID</button></div>
       <button class="chip-btn" id="btnSetupAgain"><span data-ic="settings" data-sz="16"></span><span data-i18n="editSetup">Edit setup</span></button>
+      <button class="chip-btn" data-memory-library data-i18n="mgLibrary">Memory Library</button>
       <button class="chip-btn" data-go="landing"><span data-ic="close" data-sz="16"></span><span data-i18n="exit">Exit</span></button>
     </div>
   </header>
@@ -105,6 +108,8 @@
       <div class="dir-head"><span class="rec"></span><b data-i18n="director">Demo director</b><button class="dir-toggle" id="dirToggle" data-ic="close" data-sz="16"></button></div>
       <p class="dir-sub" data-i18n="directorSub">Trigger real-life moments without leaving the room.</p>
       <div class="dir-groups" id="dirGroups"></div>
+      <button class="mg-launch" id="memoryDemoStart" data-i18n="mgDemo">Memory Garden + Safe Return</button>
+      <button class="mg-launch" id="memoryConfirm" data-i18n="mgConfirmSafety">Confirm safety</button>
       <div class="dir-log-head"><span data-ic="chart" data-sz="14"></span><span data-i18n="sysLog">System brain</span></div>
       <div class="dir-log" id="sysLog"></div>
     </aside>
@@ -132,6 +137,7 @@
             </div>
             <div class="d-safe ok" id="dSafe"><span data-ic="shield" data-sz="24"></span><span id="dSafeTxt">You are safe</span></div>
             <div class="d-mapwrap"><div class="d-map" id="devMap"></div><div class="d-map-tag" id="devMapTag"></div></div>
+            <button class="mg-launch" id="memoryOpen"><span aria-hidden="true">✿</span> <span data-i18n="mgTitle">Memory Garden</span></button>
 
             <button class="bigbtn b-home" id="bHome"><span class="bb-ic" data-ic="home" data-sz="52"></span><span class="bb-tx"><b data-i18n="bHome">GO HOME</b><i data-i18n="bHomeD">I will guide you</i></span></button>
             <div class="bb-row">
@@ -149,6 +155,7 @@
               <div class="cs-say" id="csSay"></div>
               <div class="cs-input"><input id="csInput" type="text" data-i18n-ph="typeHere" placeholder="Type here"><button id="csMic" data-ic="mic" data-sz="24"></button><button id="csSend" data-ic="send" data-sz="22"></button></div>
             </div>
+
           </div>
         </div>
       </div>
@@ -220,6 +227,7 @@
   <div class="nav-mini"><div id="navMini"></div><span id="navMiniTag"></span></div>
 
   <div class="nav-bottom" id="navBottom"></div>
+  <details class="memory-nav-input"><summary data-i18n="mgNavSay">Speak or type to your companion</summary><form id="memoryNavForm"><label for="memoryNavText" data-i18n="mgNavSay">Speak or type to your companion</label><input id="memoryNavText" type="text" maxlength="300"><button type="submit" data-i18n="mgSend">Send</button><button type="button" id="memoryNavMic" data-i18n="mgMic">Speak</button><button type="button" id="memoryNavRest" data-i18n="needRest">I need to rest</button><button type="button" id="memoryNavConfused" data-i18n="mgConfused">I'm confused</button></form></details>
 
   <div class="nav-fabs">
     <button class="fab call" id="navCall"><span data-ic="phone" data-sz="28"></span></button>
@@ -283,10 +291,16 @@
 <script src="js/world.js"></script>
 <script src="js/watch3d.js"></script>
 <script src="js/app.js"></script>
+<script src="js/memory-data.js"></script>
 <script src="js/setup.js"></script>
 <script src="js/guide.js"></script>
 <script src="js/inbox.js"></script>
 <script src="js/sim.js"></script>
+<script src="js/garden.js"></script>
+<script src="js/memory.js"></script>
+<script src="js/memory-ui.js"></script>
+<script src="js/memory-safety.js"></script>
+<script src="js/memory-demo.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

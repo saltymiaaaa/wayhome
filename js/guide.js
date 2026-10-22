@@ -88,8 +88,10 @@
     });
     if (!crossNode && r.nodes.length > 2) crossNode = r.nodes[Math.floor(r.nodes.length / 2)];
     if (crossNode) ev.push({ type: 'cross', s: crossNode.s - 1.9, node: crossNode });
-    S.landmarks.forEach((lm) => {
+    WH.MemoryData.navigationPlaces().forEach((source) => {
+      const lm = {...source, name:WH.MemoryData.text(source), photo:WH.MemoryData.url(source.photoId)||source.photo};
       const pr = project(r, WH.lmPos(lm));
+      if (lm.waypoint && project(r, WH.node(lm.waypoint.i,lm.waypoint.j)).d > 0.7) return;
       if (pr.d <= 4.9 && pr.s > 3 && pr.s < r.total - 7) ev.push({ type: 'look', s: pr.s - 0.8, lm, d: pr.d });
     });
     ev.sort((a, b) => a.s - b.s);
@@ -136,6 +138,7 @@
 
   G.cur = () => G.steps[G.idx];
   G.complete = function () {
+    if(S.sosActive || S.gpsLost || G.paused || WH.hasPrompt()) return;
     G.idx++; G.fails = 0;
     WH.wNav.setLight('red'); WH.worlds.forEach((w) => w.setCrossing(null, false));
     if (G.idx >= G.steps.length) { G.arrive(); return; }
@@ -153,7 +156,7 @@
       WH.say(T('v_look', { name: st.lm.name }));
     } else if (st.type === 'cross') {
       WH.worlds.forEach((w) => { w.setCrossing(st.node, true); w.setLight('red'); });
-      WH.say(T('v_cross_wait')); G.waitT = 4.2; G.crossPhase = 0; WH.buzz('soft');
+      WH.say(T('mgCross')); G.crossPhase = 0; WH.buzz('soft');
     } else if (st.type === 'arrive') {
       WH.buzz('soft'); WH.say(T('v_arrive', { n: S.callName }));
     }
@@ -161,23 +164,26 @@
   };
 
   G.answerYes = function () {
-    const st = G.cur(); if (!st) return;
+    if (S.gpsLost || S.sosActive || G.paused) return;
+    const st = G.cur(); if (!st || !['arrive','look'].includes(st.type) || WH.hasPrompt()) return;
     if (st.type === 'arrive') { WH.say(T('v_arrive_yes')); G.arrive(); return; }
     if (st.type === 'look') { WH.say(T('v_look_yes')); WH.beep('ok'); }
     G.complete();
   };
   G.answerNo = function () {
+    if (S.gpsLost || S.sosActive) return;
     const st = G.cur(); if (!st) return;
     G.fails++;
     if (G.fails === 1) {
-      WH.say(T('v_look_retry', { name: st.lm ? st.lm.name : T('yourGate') }));
-      WH.toast(ic('eye', 18) + ' ' + T('retryToast'), 'warn');
-      WH.sysLog('Guide: landmark not found, re-describing', 'warn'); G.renderAll();
-    } else {
-      WH.say(T('v_look_family', { who: WH.contact(0).name }));
-      WH.sysLog('Guide: landmark not found twice, calling family', 'bad');
       G.paused = true;
-      WH.Sim.callFamily({ auto: true, reason: 'guide', onEnd: () => { G.paused = false; G.fails = 0; G.renderAll(); } });
+      WH.MemoryData.event('landmark-not-visible', st.lm?.id || 'home');
+      WH.devPrompt({tone:'blue',icon:'eye',title:T('mgReorient'),buttons:[
+        {label:T('mgLookAgain'),tone:'green',fn:()=>{G.paused=false;G.renderAll();}},
+        {label:T('mgFamily'),tone:'blue',fn:()=>WH.MemorySafety.handover()},
+        {label:T('mgConfused'),tone:'ghost',fn:()=>WH.MemorySafety.confused()}
+      ]});
+    } else {
+      WH.MemorySafety.confused();
     }
   };
 
@@ -242,7 +248,7 @@
     G.state = 'hold'; S.moving = false; G.holdT = 0; G.holdAsked = false; G.renderAll();
     WH.sysLog('Demo: user stopped moving', 'warn');
   };
-  G.resume = function () { if (G.state === 'hold') { if (G.idx === 0) G.idx = 1; G.state = 'walking'; G.holdAsked = false; WH.say(T('v_resume')); G.renderAll(); } };
+  G.resume = function () { if(S.sosActive||S.gpsLost||G.paused)return; if (G.state === 'hold') { if (G.idx === 0) G.idx = 1; G.state = 'walking'; G.holdAsked = false; WH.say(T('v_resume')); G.renderAll(); } };
 
   /* per-frame */
   G.tick = function (dt) {
@@ -260,11 +266,7 @@
     } else if (G.state === 'event') {
       const st = G.cur();
       if (st.type === 'turn') { G.waitT -= dt * mul; if (G.waitT <= 0) G.complete(); }
-      else if (st.type === 'cross') {
-        G.waitT -= dt * mul;
-        if (G.crossPhase === 0 && G.waitT <= 0) { G.crossPhase = 1; G.waitT = 3; WH.worlds.forEach((w) => w.setLight('green')); WH.say(T('v_cross_go')); WH.beep('ok'); G.renderAll(); }
-        else if (G.crossPhase === 1 && G.waitT <= 0) G.complete();
-      }
+      // Crossing steps require explicit classroom continuation, never a timed green light.
     } else if (G.state === 'detour') {
       const d = G.detour; d.s = Math.min(d.total, d.s + BASE_V * mul * dt);
       let k = d.s <= d.cum[1] ? 1 : 2, a = d.pts[k - 1], b = d.pts[k], l = d.cum[k] - d.cum[k - 1] || 1, u = (d.s - d.cum[k - 1]) / l;
@@ -276,9 +278,7 @@
       G.holdT += dt;
       if (G.holdT > 3.5 && !G.holdAsked) {
         G.holdAsked = true;
-        WH.devPrompt({ tone: 'amber', icon: 'stop', title: T('stoppedTitle'), text: T('stoppedText'), secs: 12, say: T('v_stopped', { n: S.callName }), haptic: 'soft',
-          buttons: [{ label: T('imResting'), tone: 'ghost', icon: 'check', fn: () => { WH.say(T('v_rest')); WH.Sim.notifyFamily('rest'); } }, { label: T('keepGoing'), tone: 'blue', icon: 'walk', fn: () => G.resume() }],
-          onTimeout: () => { WH.Sim.notifyFamily('stopped'); WH.Sim.callFamily({ auto: true, reason: 'stopped', onEnd: () => G.resume() }); } });
+        WH.MemorySafety.check();
       }
     }
   };
@@ -289,7 +289,7 @@
     const d = Math.max(0, st.s - G.s) * M;
     if (st.type === 'turn') return { ic: st.dir, main: T(st.dir === 'left' ? 'tLeft' : 'tRight'), sub: T('onto', { street: st.street }), d, tone: 'turn' };
     if (st.type === 'look') return { ic: 'eye', main: T('lookFor', { name: st.lm.name }), sub: T('lookSub'), d, tone: 'look' };
-    if (st.type === 'cross') return { ic: 'crossing', main: T('crossStreet'), sub: T('crossSub'), d, tone: 'cross' };
+    if (st.type === 'cross') return { ic: 'crossing', main: T('mgSimulation'), sub: T('mgCross'), d, tone: 'cross' };
     if (st.type === 'arrive') return { ic: 'home', main: T('homeAhead'), sub: T('homeSub'), d, tone: 'home' };
     return { ic: 'walk', main: T('walkAlong', { street: st.street || '' }), sub: T('slowly'), d: 0, tone: 'walk' };
   };
@@ -325,7 +325,7 @@
     const box = $('#navBottom'), st = G.cur();
     if (!st) { box.innerHTML = ''; return; }
     let h = '';
-    const walkCard = (title, sub) => `<div class="nb walking"><div class="nb-ic">${ic('walk', 42)}</div><div class="nb-tx"><b>${title}</b><span>${sub}</span></div><div class="nb-bar"><i></i></div><button class="nb-btn" id="nbRest">${ic('heart', 20)} ${T('needRest')}</button></div>`;
+    const walkCard = (title, sub) => `<div class="nb walking"><div class="nb-ic">${ic('walk', 42)}</div><div class="nb-tx"><b>${esc(title)}</b><span>${esc(sub)}</span></div><div class="nb-bar"><i></i></div><button class="nb-btn" id="nbRest">${ic('heart', 20)} ${T('needRest')}</button></div>`;
     if (G.state === 'brief') {
       h = `<div class="nb brief"><div class="nb-ic">${ic('assistant', 46)}</div><div class="nb-tx"><b>${T('briefTitle', { n: S.callName })}</b><span>${T('briefSub')}</span></div></div>`;
     } else if (G.state === 'detour') {
@@ -339,23 +339,24 @@
     } else if (G.state === 'event') {
       if (st.type === 'look' || st.type === 'arrive') {
         const lm = st.lm, photo = st.type === 'arrive' ? landmarkArt('home', T('yourGateCap')) : (lm.photo || landmarkArt(lm.type, lm.name));
-        const q = st.type === 'arrive' ? T('arriveQ') : T('lookQ', { name: lm.name });
-        const hint = G.fails ? T('lookHint') : (st.type === 'arrive' ? T('arriveHint') : T('lookHintFirst'));
-        h = `<div class="nb look ${G.fails ? 'retry' : ''}"><div class="nb-photo"><img src="${photo}" alt=""><span class="nb-tag">${ic('eye', 16)} ${T('lookTag')}</span></div>
-          <div class="nb-q"><h2>${q}</h2><p>${hint}</p>
-          <div class="nb-yn"><button class="yn yes" id="ynYes">${ic('check', 34)}<span>${T('yesSee')}</span></button><button class="yn no" id="ynNo">${ic('close', 30)}<span>${T('noSee')}</span></button></div></div></div>`;
+        const q = st.type === 'arrive' ? T('arriveQ') : T('mgSeeQ');
+        const hint = G.fails ? T('mgReorient') : (st.type === 'arrive' ? T('arriveHint') : WH.MemoryData.text(lm,'story'));
+        h = `<div class="nb look ${G.fails ? 'retry' : ''}"><div class="nb-photo"><img src="${esc(photo)}" alt="${esc(lm?lm.name:T('yourGateCap'))}"><span class="nb-tag">${ic('eye', 16)} ${T('lookTag')}</span></div>
+          <div class="nb-q"><h2>${q}</h2><p>${esc(hint)}</p>
+          <div class="nb-yn"><button class="yn yes" id="ynYes">${ic('check', 34)}<span>${T('mgSee')}</span></button><button class="yn no" id="ynNo">${ic('close', 30)}<span>${T('mgNoSee')}</span></button></div><button class="nb-btn" id="landmarkCall">${T('mgFamily')}</button></div></div>`;
       } else if (st.type === 'cross') {
-        const green = G.crossPhase === 1;
-        h = `<div class="nb cross ${green ? 'green' : 'red'}"><div class="tl ${green ? 'g' : 'r'}"><i></i><i></i></div><div class="nb-tx"><b>${green ? T('crossGo') : T('crossWait')}</b><span>${green ? T('crossGoSub') : T('crossWaitSub')}</span></div></div>`;
+        h = `<div class="nb cross red"><div class="nb-tx"><b>${T('mgSimulation')}</b><span>${T('mgCross')}</span></div><button class="nb-btn" id="classroomCross">${T('mgCrossNext')}</button></div>`;
       } else if (st.type === 'turn') {
         h = `<div class="nb turn"><div class="nb-ic big">${ic(st.dir, 54)}</div><div class="nb-tx"><b>${T(st.dir === 'left' ? 'tLeft' : 'tRight')}</b><span>${T('onto', { street: st.street })}</span></div></div>`;
       }
     }
     box.innerHTML = h;
     const y = $('#ynYes'), n = $('#ynNo'), r = $('#nbRest'), go = $('#nbGo');
+    if ($('#landmarkCall')) $('#landmarkCall').onclick = () => WH.MemorySafety.handover();
+    if ($('#classroomCross')) $('#classroomCross').onclick = () => { if(!S.gpsLost&&!S.sosActive&&!G.paused) G.complete(); };
     if (y) y.onclick = () => G.answerYes();
     if (n) n.onclick = () => G.answerNo();
-    if (r) r.onclick = () => G.holdStop();
+    if (r) r.onclick = () => WH.MemorySafety.rest();
     if (go) go.onclick = () => G.resume();
   };
 
@@ -363,18 +364,24 @@
     $('#navSkip').onclick = () => G.skip();
     $('#navEnd').onclick = () => { WH.sysLog('Guide: ended by user', 'warn'); G.stop(false); };
     WH.$$('#navSpeed button').forEach((b) => (b.onclick = () => { G.speedMul = +b.dataset.sp; $$speed(); }));
-    $('#navCall').onclick = () => { G.paused = true; WH.Sim.callFamily({ reason: 'user', onEnd: () => { G.paused = false; G.renderAll(); } }); };
+    $('#navCall').onclick = () => WH.MemorySafety.handover();
     $('#navSos').onclick = () => WH.Sim.pressSos();
     $('#navDirector').innerHTML = `<div class="nd-h">${ic('spark', 14)} ${T('navDemo')}</div>
       <button data-a="wrong">${ic('route', 16)}<span>${T('nd_wrong')}</span></button>
       <button data-a="stop">${ic('stop', 16)}<span>${T('nd_stop')}</span></button>
       <button data-a="fall">${ic('alert', 16)}<span>${T('nd_fall')}</span></button>
       <button data-a="hr">${ic('pulse', 16)}<span>${T('nd_hr')}</span></button>
-      <button data-a="night">${ic('moon', 16)}<span>${T('nd_night')}</span></button>`;
+      <button data-a="night">${ic('moon', 16)}<span>${T('nd_night')}</span></button>
+      <button data-a="low"><span>${T('mgLowButton')}</span></button>
+      <button data-a="restore"><span>${T('mgRestore')}</span></button>
+      <button data-a="confused"><span>${T('mgConfused')}</span></button>`;
     WH.$$('#navDirector button').forEach((b) => (b.onclick = () => {
       const a = b.dataset.a;
+      if(a==='low'){if(!S.gpsLost)WH.Sim.gpsLost();return;}
+      if(a==='restore'){if(S.gpsLost)WH.MemorySafety.restore();return;}
+      if(a==='confused')return WH.MemorySafety.confused();
       if (a === 'wrong') G.wrongTurn(); else if (a === 'stop') G.holdStop(); else if (a === 'fall') WH.Sim.fall(false); else if (a === 'hr') WH.Sim.hrAbnormal('high'); else if (a === 'night') WH.Sim.toggleNight();
     }));
   };
-  WH.Guide.posAt = posAt; WH.Guide.buildRoute = buildRoute; WH.Guide.snapToRoad = snapToRoad;
+  WH.Guide.posAt = posAt; WH.Guide.buildRoute = buildRoute; WH.Guide.buildSteps=buildSteps; WH.Guide.snapToRoad = snapToRoad;
 })();

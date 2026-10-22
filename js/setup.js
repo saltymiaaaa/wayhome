@@ -62,7 +62,7 @@
       if (!S.providers[p]) { b.classList.add('busy'); b.lastElementChild.innerHTML = '<span class="spin"></span> ' + T('connecting'); setTimeout(() => { S.providers[p] = true; WH.toast(ic('check', 18) + ' ' + T('provOk', { p: b.querySelector('b').textContent }), 'ok'); Setup.render(); }, 1100); }
       else Setup.render();
     }));
-    $$('[data-rm]').forEach((b) => (b.onclick = () => { S.landmarks.splice(+b.dataset.rm, 1); WH.worlds.forEach((w) => w.rebuildLandmarks()); Setup.render(); }));
+    $$('[data-rm]').forEach((b) => (b.onclick = () => { WH.MemoryData.remove('places', S.landmarks[+b.dataset.rm].id); Setup.render(); }));
   }
   function locate() {
     WH.toast(ic('gps', 18) + ' ' + T('located'), 'ok'); WH.wSetup.flyHome(40);
@@ -145,7 +145,7 @@
       <div><span>${T('sIdle')} <b class="val" id="vIdle">${S.sensors.idleMin} min</b></span><input type="range" id="fIdle" min="5" max="60" step="5" value="${S.sensors.idleMin}"></div></div></div>`;
   }
   function b5() {
-    $('#fAsName').oninput = (e) => { S.assistant.name = e.target.value || 'Na'; };
+    $('#fAsName').oninput = (e) => { S.assistant.name = e.target.value || 'Sprout'; WH.MemoryData.state.prefs.name=S.assistant.name; WH.MemoryData.save(); };
     $$('#voiceSeg button').forEach((b) => (b.onclick = () => { S.assistant.voice = b.dataset.v; WH.say(T('v_sample', { n: S.callName })); Setup.render(); }));
     $$('[data-act]').forEach((s) => (s.onchange = () => { S.phrases[+s.dataset.act].action = s.value; Setup.render(); }));
     $$('[data-who]').forEach((s) => (s.onchange = () => { S.phrases[+s.dataset.who].who = +s.value; }));
@@ -215,7 +215,7 @@
 
   /* landmark editor */
   function onPick(info) {
-    Setup.pendingLm = info; Setup.lmPhoto = null; Setup.lmType = 'market';
+    if(Setup.lmPhoto?.startsWith('blob:'))URL.revokeObjectURL(Setup.lmPhoto);Setup.pendingLm = info; Setup.lmPhoto = null;Setup.lmFile=null;$('#lmFile').value=''; Setup.lmType = 'market';
     $('#lmName').value = ''; renderTypes(); preview(); $('#mdLandmark').classList.add('on'); setTimeout(() => $('#lmName').focus(), 80);
   }
   const TYPE_LABEL = { market: 'lt_market', pagoda: 'lt_pagoda', parkgate: 'lt_park', pharmacy: 'lt_pharm', bakery: 'lt_bakery', busstop: 'lt_bus', school: 'lt_school' };
@@ -226,12 +226,13 @@
   function preview() { $('#lmPrev').src = Setup.lmPhoto || landmarkArt(Setup.lmType, $('#lmName').value || T(TYPE_LABEL[Setup.lmType])); }
   function bindModal() {
     $('#lmName').oninput = () => { if (!Setup.lmPhoto) preview(); };
-    $('#lmFile').onchange = (e) => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { Setup.lmPhoto = rd.result; preview(); }; rd.readAsDataURL(f); };
+    $('#lmFile').onchange = (e) => { const f = e.target.files[0]; if (!f) return; if(!/^image\/(jpeg|png|webp|gif)$/.test(f.type)||f.size>5*1024*1024)return WH.toast(T('mgFileError'),'warn');if(Setup.lmPhoto?.startsWith('blob:'))URL.revokeObjectURL(Setup.lmPhoto);Setup.lmFile=f;Setup.lmPhoto=URL.createObjectURL(f);preview(); };
     $('#lmCancel').onclick = () => $('#mdLandmark').classList.remove('on');
-    $('#lmSave').onclick = () => {
+    $('#lmSave').onclick = async () => {
       const i = Setup.pendingLm; if (!i) return;
       const name = $('#lmName').value.trim() || T(TYPE_LABEL[Setup.lmType]);
-      S.landmarks.push({ id: 'l' + uid++, type: Setup.lmType, name, i: i.i, j: i.j, sx: i.sx, sz: i.sz, photo: Setup.lmPhoto || null });
+      let photoId=null;try{if(Setup.lmFile)photoId=await WH.MemoryData.putMedia(Setup.lmFile,'image');}catch(err){WH.toast(T('mgFileError'),'warn');return;}
+      WH.MemoryData.upsert('places',{ type: Setup.lmType, name, i: i.i, j: i.j, sx: i.sx, sz: i.sz, photoId, memoryApproved:false, navigationApproved:false });
       $('#mdLandmark').classList.remove('on');
       WH.worlds.forEach((w) => w.rebuildLandmarks());
       WH.toast(ic('pin', 18) + ' ' + T('lmAdded', { n: name }), 'ok'); Setup.render();

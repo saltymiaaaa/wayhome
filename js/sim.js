@@ -16,6 +16,7 @@
     return WH.STREETS_V[n.i] + ' / ' + WH.STREETS_H[n.j];
   };
   function stopWalkers() { Wander.active = false; S.moving = false; }
+  Sim.pauseMovement = stopWalkers;
 
   /* ───────────── escalation ladder ───────────── */
   const Esc = (Sim.Esc = { on: false, vmin: 0, level: 0, noAnswer: 0, reaskT: 0, prompted: false });
@@ -53,6 +54,7 @@
   }
   function askGoHome() {
     if (!Esc.on || S.guiding || S.sosActive || WH.hasPrompt()) return;
+    if (WH.MemorySafety) { Esc.prompted=true; WH.MemorySafety.check(); return; }
     Esc.prompted = true;
     WH.devPrompt({
       tone: 'blue', icon: 'nav', title: T('breachTitle'), text: T('breachText', { n: nm() }), secs: 16, haptic: 'strong', beep: 'chime', say: T('v_breach', { n: nm() }),
@@ -136,6 +138,7 @@
   /* ───────────── calls ───────────── */
   let call = null;
   Sim.callFamily = function (o) {
+    if (S.sosActive) return;
     o = o || {};
     if (call) return;
     const c = WH.contact(o.who || 0);
@@ -143,11 +146,11 @@
     S.inCall = true;
     WH.sysLog(T('log_calling', { who: c.name, reason: o.reason || 'user' }), 'ok');
     WH.devPrompt({
-      tone: 'green', icon: 'phone', title: T('calling', { who: c.name }), text: T('callingSub'), haptic: 'soft', beep: 'ring', say: T('v_calling', { who: c.name }),
+      tone: 'green', icon: 'phone', title: T('mgWaiting'), text: T('mgSimulation'), haptic: 'soft', say: T('mgWaiting'),
       buttons: [{ label: T('hangUp'), tone: 'red', icon: 'close', fn: () => endCall() }]
     });
     famIncoming(c);
-    call.auto = setTimeout(() => { if (call && call.state === 'ring') connect(); }, 4200);
+    // The caregiver explicitly acknowledges; elapsed time is not an acknowledgement.
   };
   function famIncoming(c) {
     WH.famLayer(`<div class="call in"><div class="call-ava big">${esc(nm().slice(-1))}</div><h3>${esc(nm())}</h3><p>${T('incoming')}</p>
@@ -156,13 +159,14 @@
     $('#fcAccept').onclick = () => connect(); $('#fcDecline').onclick = () => endCall(true);
   }
   function connect() {
+    if (S.sosActive) return;
     if (!call || call.state === 'live') return;
     call.state = 'live'; call.t0 = performance.now(); clearTimeout(call.auto);
     const c = call.c;
-    WH.beep('ok');
+    WH.MemorySafety && WH.MemorySafety.acknowledged();
     const line = T(S.out ? 'callLineOut' : 'callLine', { n: nm() });
     WH.devPrompt({
-      tone: 'green', icon: 'phone', title: c.name, text: line, extra: '<div class="dp-timer" id="dpTimer">00:00</div>',
+      tone: 'green', icon: 'phone', title: T('mgAcknowledged'), text: T('mgSimulation'), extra: '<div class="dp-timer" id="dpTimer">00:00</div>',
       buttons: [{ label: T('hangUp'), tone: 'red', icon: 'close', fn: () => endCall() }]
     });
     WH.say(line);
@@ -184,6 +188,7 @@
     c.o.onEnd && c.o.onEnd();
   }
   Sim.famCall = function () {
+    if(S.sosActive)return;
     if (call) return;
     call = { o: {}, c: { name: nm() }, state: 'ring' };
     WH.famLayer(`<div class="call out"><div class="call-ava big">${esc(nm().slice(-1))}</div><h3>${esc(nm())}</h3><p>${T('calling2')}</p><div class="call-btns"><button class="cb red" id="fcEnd2">${ic('close', 30)}</button></div></div>`, 'dark');
@@ -194,6 +199,7 @@
       onTimeout: () => { call = null; WH.famLayer(null); WH.feed(T('f_noans', { n: nm() }), 'amber', 'phone'); WH.famBanner({ ic: 'phone', tone: 'amber', title: T('noAnsTitle'), body: T('noAnsBody', { n: nm() }) }); }
     });
   };
+  Sim.abortCall = function () { if(call){clearTimeout(call.auto);clearInterval(call.iv);call=null;} S.inCall=false; };
   Sim.notifyFamily = function (kind) {
     const map = {
       rest: ['heart', 'blue', T('nf_rest_t', { n: nm() }), T('nf_rest_b')],
@@ -224,7 +230,7 @@
     const targets = S.contacts.map((c, i) => `<div class="sl-item" style="--d:${(i * 0.9 + 0.5).toFixed(1)}s">${ic('phone', 20)}<b>${esc(c.name)}</b><span>${i === 0 ? T('sosCalling') : T('sosSms')}</span><em>${ic('check', 16)}</em></div>`).join('') +
       `<div class="sl-item" style="--d:${(S.contacts.length * 0.9 + 0.8).toFixed(1)}s">${ic('ambulance', 20)}<b>${T('emerg')}</b><span>${T('sosGps')}</span><em>${ic('check', 16)}</em></div>`;
     WH.devPrompt({
-      tone: 'red', big: true, icon: 'siren', title: T('sosTitle'), text: T('sosText'), extra: `<div class="sos-list">${targets}</div>`, say: T('v_sos', { n: nm() }),
+      emergency: true, tone: 'red', big: true, icon: 'siren', title: T('sosTitle'), text: T('mgSimulation'), extra: `<div class="sos-list">${targets}</div>`, say: T('v_sos', { n: nm() }),
       buttons: [{ label: T('sosCancel'), tone: 'ghost', icon: 'check', fn: () => Sim.cancelSos(), keep: false }]
     });
     WH.buzz('sos');
@@ -408,6 +414,7 @@
     setTimeout(() => process(text), 520);
   };
   function process(text) {
+    if(S.sosActive)return;
     const n = norm(text);
     for (const p of S.phrases) {
       const keys = [p.say].concat(p.variants || []).map(norm).filter(Boolean);
@@ -537,7 +544,7 @@
   Sim.bind = function () {
     $('#bHome').onclick = () => Sim.pressHome();
     $('#bCall').onclick = () => Sim.pressCall();
-    $('#bAsk').onclick = () => WH.openChat();
+    $('#bAsk').onclick = () => { if(!S.sosActive) WH.openChat(); };
     $('#bSos').onclick = () => Sim.pressSos();
     $('#csClose').onclick = () => WH.closeChat();
     const send = () => { const i = $('#csInput'); const v = i.value; i.value = ''; Sim.userSays(v); };
