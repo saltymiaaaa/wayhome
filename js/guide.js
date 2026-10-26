@@ -150,7 +150,7 @@
     G.state = 'event'; G.fails = 0; S.moving = false;
     if (st.type === 'turn') {
       const landmark=G.nextLandmark?.();WH.buzz(G.viewMode==='wearer'?'soft':st.dir); WH.beep('chime');
-      WH.say(G.viewMode==='wearer'?(landmark?T('mgTowardLandmark',{name:landmark.lm.name}):T('mgNoLandmark')):T(st.dir === 'left' ? 'v_turn_L' : 'v_turn_R', { street: st.street }));
+      WH.say(G.viewMode==='wearer'?(landmark?T('mgTowardLandmark',{name:landmark.lm.guidanceCue||landmark.lm.name}):T('mgNoLandmark')):T(st.dir === 'left' ? 'v_turn_L' : 'v_turn_R', { street: st.street }));
       G.waitT = 2.6;
     } else if (st.type === 'look') {
       WH.buzz('soft'); WH.beep('chime');
@@ -314,6 +314,10 @@
       reachedButton.disabled=!!(G.paused||S.gpsLost||S.sosActive);
       reachedButton.textContent=T('mgReachedLandmark');
       reachedButton.setAttribute('aria-disabled',String(reachedButton.disabled));
+      if(!G.paused&&!S.gpsLost&&G.state!=='detour'){
+        $('#wearerNavMain').textContent=T('mgTowardLandmark',{name:target.lm.guidanceCue||target.lm.name});
+        if(G.state==='event'&&G.cur()?.type==='look'&&target.lm.recognitionCue)$('#wearerNavSub').textContent=target.lm.recognitionCue;
+      }
     }
     $$speed();
   };

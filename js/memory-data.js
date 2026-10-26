@@ -6,7 +6,7 @@
   const D = WH.MemoryData = { media: new Map(), urls: new Map(), persistent: true };
   D.defaults = () => ({version: 1, prefs: {name:'Sprout', language:'en', theme:'sage', voice:true, style:'gentle', favorites:['places'], checkDelay:15,nonurgentDelay:8},
     people:[{id:'sample-mei', name:'Mei', relationshipKey:'mgDaughter', storyKey:'mgMeiStory', moreKey:'mgMeiMore', relatedPlaceId:'l3',relatedMusicId:'sample-music',approved:true, sample:true}],
-    places:seedPlaces.map(p => ({...p, name:p.id === 'l3' ? 'Morning Market' : p.name,nameKey:p.id==='l3'?'mgMarket':null, storyKey:'mgPlaceStory', memoryApproved:true, navigationApproved:true, sample:true, waypoint:{i:p.i,j:p.j}})),
+    places:seedPlaces.map(p => ({guidanceCue:p.name,recognitionCue:`Look for ${p.name}.`,visibility:'day',salience:3,...p, name:p.id === 'l3' ? 'Morning Market' : p.name,nameKey:p.id==='l3'?'mgMarket':null, storyKey:'mgPlaceStory', memoryApproved:true, navigationApproved:true, sample:true, waypoint:{i:p.i,j:p.j}})),
     music:[{id:'sample-music',nameKey:'mgSong',storyKey:'mgNoAudio',approved:true,sample:true}],
     journeys:[{id:'sample-journey',name:'Mei and the Morning Market',personId:'sample-mei',placeId:'l3',musicId:'sample-music',approved:true,sample:true}],
     routines:[{id:'sample-routine',nameKey:'mgOutside',stepsKeys:['mgShoes','mgKeys','mgJacket'],approved:true,sample:true}],
@@ -17,12 +17,13 @@
       if(D.state.version!==1 || !['people','places','music','routines','garden','events'].every(k=>Array.isArray(D.state[k]))) throw Error('schema');
       D.state.journeys=Array.isArray(D.state.journeys)?D.state.journeys:fresh.journeys;
       const known=new Set(D.state.places.map(p=>p.id));fresh.places.filter(p=>!known.has(p.id)).forEach(p=>D.state.places.push(p));
+      D.state.places=D.state.places.map(p=>({...fresh.places.find(seed=>seed.id===p.id),...p}));
       D.state.prefs={...fresh.prefs,...D.state.prefs}; D.state.usage=D.state.usage||{};
     } catch(e) {D.state=fresh; D.persistent=false;}
     D.applyPrefs(); D.syncPlaces(); return D.state;
   };
   D.save = function () {try {localStorage.setItem(KEY,JSON.stringify(D.state));WH.Backend?.queueState(D.state);return true;} catch(e) {D.persistent=false; return false;} };
-  D.syncBackend=async function(){const remote=await WH.Backend?.sync(D.state);if(!remote)return false;const fresh=D.defaults();if(remote.version!==1||!['people','places','music','routines','journeys','garden','events'].every(k=>Array.isArray(remote[k])))return false;D.state={...remote,prefs:{...fresh.prefs,...remote.prefs},usage:remote.usage||{}};D.applyPrefs();D.syncPlaces();D.save();D.refresh();return true;};
+  D.syncBackend=async function(){const remote=await WH.Backend?.sync(D.state);if(!remote)return false;const fresh=D.defaults();if(remote.version!==1||!['people','places','music','routines','journeys','garden','events'].every(k=>Array.isArray(remote[k])))return false;const known=new Set(remote.places.map(p=>p.id));const places=remote.places.map(p=>({...fresh.places.find(seed=>seed.id===p.id),...p})).concat(fresh.places.filter(p=>!known.has(p.id)));D.state={...remote,places,prefs:{...fresh.prefs,...remote.prefs},usage:remote.usage||{}};D.applyPrefs();D.syncPlaces();D.save();D.refresh();return true;};
   D.applyPrefs=()=>{const p=D.state.prefs; WH.S.assistant.name=p.name; WH.S.voiceOn=p.voice;};
   D.hasPosition=p=>Number.isInteger(p.i)&&Number.isInteger(p.j)&&p.i>=0&&p.i<=12&&p.j>=0&&p.j<=12;
   D.navigationPlaces=()=>D.state.places.filter(p=>p.navigationApproved===true&&D.hasPosition(p));

@@ -38,7 +38,21 @@
       { id: 'l11', type: 'parkgate', name: 'Banyan Garden Gate', i: 5, j: 2, sx: 1, sz: 1 },
       { id: 'l12', type: 'market', name: 'Fruit Stall Corner', i: 3, j: 4, sx: -1, sz: 1 },
       { id: 'l13', type: 'school', name: 'Community Learning Centre', i: 8, j: 6, sx: 1, sz: 1 },
-      { id: 'l14', type: 'pagoda', name: 'Riverside Pavilion', i: 5, j: 8, sx: 1, sz: -1 }
+      { id: 'l14', type: 'pagoda', name: 'Riverside Pavilion', i: 5, j: 8, sx: 1, sz: -1 },
+      { id: 'l15', type: 'market', name: 'Blue Awning Vegetable Stall', i: 2, j: 2, sx: 1, sz: 1, guidanceCue: 'the vegetable stall with the blue awning', recognitionCue: 'Look for stacked green baskets beneath a bright blue awning.', visibility: 'day', salience: 5 },
+      { id: 'l16', type: 'pharmacy', name: 'Sunrise Pharmacy', i: 2, j: 5, sx: -1, sz: 1, guidanceCue: 'the pharmacy with the large green cross', recognitionCue: 'Look for a large illuminated green cross above the door.', visibility: 'day-night', salience: 5 },
+      { id: 'l17', type: 'bakery', name: 'Golden Bun Bakery', i: 2, j: 8, sx: 1, sz: -1, guidanceCue: 'the bakery with the yellow sign', recognitionCue: 'Look for the yellow bun-shaped sign and striped window.', visibility: 'day', salience: 4 },
+      { id: 'l18', type: 'busstop', name: 'Lotus Road Bus Shelter', i: 2, j: 10, sx: -1, sz: -1, guidanceCue: 'the glass bus shelter with the red bench', recognitionCue: 'Look for a glass shelter and one long red bench.', visibility: 'day-night', salience: 4 },
+      { id: 'l19', type: 'school', name: 'Rainbow Kindergarten Gate', i: 4, j: 3, sx: 1, sz: 1, guidanceCue: 'the gate painted like a rainbow', recognitionCue: 'Look for the low gate with seven colored arches.', visibility: 'day', salience: 5 },
+      { id: 'l20', type: 'parkgate', name: 'Twin Lion Park Gate', i: 4, j: 7, sx: -1, sz: 1, guidanceCue: 'the park gate with two stone lions', recognitionCue: 'Look for one stone lion on each side of the green gate.', visibility: 'day', salience: 5 },
+      { id: 'l21', type: 'pagoda', name: 'Three Lantern Pavilion', i: 4, j: 11, sx: 1, sz: -1, guidanceCue: 'the pavilion with three red lanterns', recognitionCue: 'Look for three red lanterns hanging in one row.', visibility: 'day-night', salience: 5 },
+      { id: 'l22', type: 'market', name: 'Flower Cart Corner', i: 6, j: 1, sx: -1, sz: 1, guidanceCue: 'the flower cart with pink umbrellas', recognitionCue: 'Look for buckets of flowers under two pink umbrellas.', visibility: 'day', salience: 4 },
+      { id: 'l23', type: 'busstop', name: 'Hospital Bus Stop', i: 6, j: 10, sx: 1, sz: -1, guidanceCue: 'the bus stop with the blue hospital sign', recognitionCue: 'Look for a blue H sign beside the covered seat.', visibility: 'day-night', salience: 4 },
+      { id: 'l24', type: 'bakery', name: 'Moon Cake Shop', i: 8, j: 9, sx: -1, sz: 1, guidanceCue: 'the shop with the round moon sign', recognitionCue: 'Look for a large round gold sign above the window.', visibility: 'day-night', salience: 5 },
+      { id: 'l25', type: 'pharmacy', name: 'Corner Medical Shop', i: 9, j: 3, sx: 1, sz: -1, guidanceCue: 'the white shop with the green cross', recognitionCue: 'Look for the white storefront and green cross at the corner.', visibility: 'day-night', salience: 4 },
+      { id: 'l26', type: 'school', name: 'Red Clock School', i: 10, j: 2, sx: -1, sz: 1, guidanceCue: 'the school with the red clock', recognitionCue: 'Look for the square red clock above the main gate.', visibility: 'day', salience: 5 },
+      { id: 'l27', type: 'parkgate', name: 'Bamboo Walk Entrance', i: 10, j: 8, sx: 1, sz: 1, guidanceCue: 'the entrance between two tall bamboo signs', recognitionCue: 'Look for two tall green bamboo signs beside the path.', visibility: 'day', salience: 4 },
+      { id: 'l28', type: 'pagoda', name: 'East Lake Lantern Arch', i: 11, j: 5, sx: -1, sz: -1, guidanceCue: 'the red arch with hanging lanterns', recognitionCue: 'Look for the red arch and four hanging lanterns.', visibility: 'day-night', salience: 5 }
     ],
     phrases: [
       { id: 'p1', say: 'I fell', variants: ['i have fallen', 'wo shuai dao le', '我摔倒了', 'nga roi'], action: 'fall', who: 0 },
