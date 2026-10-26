@@ -3,6 +3,7 @@
  const WH=window.WH,D=WH.MemoryData,S=WH.S,T=WH.t;
  const P=WH.MemoryDemo={active:false,step:0,grown:false};
  P.stop=function(){P.active=false;document.body.classList.remove('memory-presenting');P.render();};
+ P.exit=function(){P.stop();WH.Memory.close();WH.MemoryLibrary.close();WH.closePrompt(true);WH.Sim.abortCall();WH.famLayer(null);if(WH.Guide.active)WH.Guide.stop(true);WH.MemorySafety.clear();WH.MemorySafety.unresolved=false;WH.MemorySafety.reason=null;S.gpsLost=false;S.removed=false;S.out=false;WH.Guide.paused=false;WH.SafetyPolicy.reset();WH.enterStage('both');};
  P.reset=function(){WH.Sim.reset();P.step=0;P.grown=false;P.active=true;document.body.classList.add('memory-presenting');WH.enterStage('both');WH.Memory.open();P.render();};
  P.start=function(){if(S.sosActive)return;P.reset();};
  P.market=()=>D.state.places.find(p=>p.id==='l3'&&p.memoryApproved&&p.navigationApproved&&D.hasPosition(p));
@@ -30,5 +31,5 @@
    P.render();
  };
  P.render=function(){const root=document.querySelector('#memoryPresenter');if(!root)return;root.hidden=!P.active;if(!P.active)return;root.innerHTML=`<b>${T('mgDemo')} · ${P.step+1}/9</b><p aria-live="polite">${T('mgDemo'+(P.step+1))}</p><nav><button class="mg-button" data-demo="back" ${P.step===0?'disabled':''}>${T('mgBack')}</button><button class="mg-button" data-demo="next" ${P.step===8?'disabled':''}>${T('mgNext')}</button><button class="mg-button" data-demo="reset">${T('mgReset')}</button><button class="mg-button" data-demo="exit">${T('mgExit')}</button></nav>`;};
- P.init=function(){const root=document.createElement('aside');root.id='memoryPresenter';root.hidden=true;root.setAttribute('aria-label',T('mgDemo'));document.body.append(root);root.onclick=e=>{const a=e.target.closest('[data-demo]')?.dataset.demo;if(a==='next')P.go(P.step+1);if(a==='back')P.go(P.step-1);if(a==='reset')P.reset();if(a==='exit')P.stop();};};
+ P.init=function(){const root=document.createElement('aside');root.id='memoryPresenter';root.hidden=true;root.setAttribute('aria-label',T('mgDemo'));document.body.append(root);root.onclick=e=>{const a=e.target.closest('[data-demo]')?.dataset.demo;if(a==='next')P.go(P.step+1);if(a==='back')P.go(P.step-1);if(a==='reset')P.reset();if(a==='exit')P.exit();};};
 })();
