@@ -308,10 +308,29 @@
   G.renderAll = function () {
     if (!G.active) return;
     G.renderTop(); G.renderBottom(); G.renderWearer(); G.updateDyn();
+    const reachedButton=$('#wearerNavReached');
+    const target=G.nextLandmark();
+    if(reachedButton&&target){
+      reachedButton.disabled=!!(G.paused||S.gpsLost||S.sosActive);
+      reachedButton.textContent=T('mgReachedLandmark');
+      reachedButton.setAttribute('aria-disabled',String(reachedButton.disabled));
+    }
     $$speed();
   };
   G.nextLandmark=function(){return G.steps.slice(G.idx).find(st=>st.type==='look')||null;};
-  G.landmarkReached=function(){const st=G.cur();if(!G.active||G.paused||S.gpsLost||S.sosActive||G.state!=='event'||st?.type!=='look')return;WH.MemoryData.event('landmark-reached',st.lm.id);G.answerYes();};
+  G.landmarkReached=function(){
+    if(!G.active)return WH.toast(T('mgGuideNotActive'),'warn');
+    if(G.paused||S.gpsLost||S.sosActive)return WH.toast(T('mgConfirmUnavailable'),'warn');
+    const st=G.cur(),target=G.nextLandmark();
+    if(!target)return WH.toast(T('mgNoLandmark'),'warn');
+    if(G.state==='event'&&st?.type==='look'){
+      WH.MemoryData.event('landmark-reached',st.lm.id);
+      G.answerYes();
+      return;
+    }
+    const metres=Math.max(0,Math.round((target.s-G.s)*M));
+    WH.toast(T('mgLandmarkTooFar',{name:target.lm.name,distance:metres}),'warn',3200);
+  };
   G.renderWearer=function(){const root=$('#wearerNav');if(!root||!G.active)return;const st=G.cur(),target=G.nextLandmark();let main=target?T('mgTowardLandmark',{name:target.lm.name}):T('mgNoLandmark'),sub=target?T('mgLandmarkDistance',{distance:Math.max(0,Math.round((target.s-G.s)*M/5)*5)}):T('mgNoLandmark'),arrow='●',status=target?T('mgLandmarkAvailable'):T('mgNoLandmark'),photo=target?(target.lm.photo||landmarkArt(target.lm.type,target.lm.name)):'',caption=target?.lm.name||'',reached=G.state==='event'&&st?.type==='look';if(S.gpsLost){main=T('mgLow');sub=WH.MemorySafety?.lastKnown?T('mgLast',{pos:`${WH.MemorySafety.lastKnown.x.toFixed(1)}, ${WH.MemorySafety.lastKnown.z.toFixed(1)}`,time:new Date(WH.MemorySafety.lastKnown.at).toLocaleTimeString(S.lang)}):T('mgSimulation');arrow='?';status=T('mgLocationUncertain');reached=false;}else if(G.paused){main=T('mgRoutePaused');sub=T('mgHandover');arrow='‖';reached=false;}else if(G.state==='detour'){main=T('offRoute');sub=T('offRouteSub');arrow='?';status=T('mgRouteDivergence');reached=false;}else if(st?.type==='arrive'){main=T('homeAhead');sub=T('homeSub');arrow='⌂';}else if(st?.type==='cross'){main=T('mgCross');sub=T('mgSimulation');arrow='◇';}else if(reached){main=T('mgReachedQuestion',{name:st.lm.name});sub=T('mgReachedPrompt');arrow='✓';}$('#wearerNavStatus').textContent=status;$('#wearerNavArrow').textContent=arrow;$('#wearerNavMain').textContent=main;$('#wearerNavSub').textContent=sub;const fig=$('#wearerNavLandmark');fig.hidden=!photo;if(photo){$('#wearerNavPhoto').src=photo;$('#wearerNavPhoto').alt=caption;$('#wearerNavCaption').textContent=caption;}const button=$('#wearerNavReached');button.hidden=!target;button.disabled=!reached;button.textContent=T(reached?'mgReachedLandmark':'mgApproachingLandmark');};
   function $$speed() { WH.$$('#navSpeed button').forEach((b) => b.classList.toggle('on', +b.dataset.sp === G.speedMul)); }
 
