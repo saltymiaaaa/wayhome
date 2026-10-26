@@ -673,6 +673,7 @@
 
   /* Memory Garden: all three languages share the existing dictionary engine. */
   const memoryStrings = {
+    mgOkayNext:['Would you like to spend a quiet moment in Memory Garden, or return to the wearable home screen?','Bà muốn thư giãn một lát trong Vườn kỷ niệm hay trở về màn hình chính của thiết bị?','Apakah Anda ingin bersantai sejenak di Taman Kenangan atau kembali ke layar utama perangkat?'],mgReturnWearable:['Return to wearable home','Về màn hình chính','Kembali ke layar utama'],
     mgTitle:['Memory Garden','Vườn kỷ niệm','Taman Kenangan'], mgLibrary:['Memory Library','Thư viện kỷ niệm','Pustaka Kenangan'],
     mgHello:["Hello! I'm {name}. Shall we explore a happy memory?",'Xin chào! Tôi là {name}. Mình cùng xem một kỷ niệm vui nhé?','Halo! Saya {name}. Mari melihat kenangan bahagia?'],
     mgQuiet:['We can take our time.','Mình cứ thong thả nhé.','Kita bisa santai.'],mgInvite:['Choose something you enjoy.','Chọn điều bà thích.','Pilih yang Anda sukai.'],
