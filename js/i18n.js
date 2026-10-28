@@ -86,6 +86,7 @@
   add('paCall', 'Call', 'Gọi');
   add('paMsg', 'Voice note', 'Tin thoại');
   add('paRing', 'Ring band', 'Rung vòng');
+  add('paFind', 'Find My', 'Tìm thiết bị');
   add('paCheck', 'Check in', 'Hỏi thăm');
   add('activity', 'Activity', 'Hoạt động');
   /* caregiver phone sections: Overview / Contacts / Safety / Landmarks / Memories / Activity */
@@ -381,6 +382,16 @@
   add('f_gps_back', 'GPS is back', 'GPS đã có lại');
   add('f_ring_ack', '{n} answered the ring: she is here', '{n} trả lời: bà ở đây');
   add('f_ring_no', '{n} did not respond to the ring', '{n} không phản hồi khi rung');
+  add('findTitle', 'Find My is ringing', 'Tìm thiết bị đang đổ chuông');
+  add('findText', '{who} is using Find My. The watch will keep ringing and vibrating until someone stops it.', '{who} đang dùng Tìm thiết bị. Đồng hồ sẽ tiếp tục đổ chuông và rung cho đến khi có người dừng.');
+  add('findCareTitle', 'Finding {n}’s watch', 'Đang tìm đồng hồ của {n}');
+  add('findCareText', 'The watch is ringing and vibrating nearby. This prototype does not track a real device.', 'Đồng hồ đang đổ chuông và rung ở gần. Bản mẫu này không theo dõi thiết bị thật.');
+  add('findStop', 'Stop ringing', 'Dừng chuông');
+  add('findFound', 'Watch found', 'Đã tìm thấy đồng hồ');
+  add('findStopped', 'Find My stopped', 'Đã dừng Tìm thiết bị');
+  add('log_find', 'Caregiver started Find My for the watch', 'Người chăm sóc đã bật Tìm thiết bị cho đồng hồ');
+  add('f_find_ack', '{n} stopped Find My on the watch', '{n} đã dừng Tìm thiết bị trên đồng hồ');
+  add('f_find_stop', 'Caregiver stopped Find My', 'Người chăm sóc đã dừng Tìm thiết bị');
   add('f_vn', 'Voice note sent: "{t}"', 'Đã gửi tin thoại: "{t}"');
   add('f_guide', '{n} started the guided walk home', '{n} bắt đầu được dẫn về nhà');
   add('f_guide_end', '{n} ended the guided walk early', '{n} dừng dẫn đường giữa chừng');

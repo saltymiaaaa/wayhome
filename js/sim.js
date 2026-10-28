@@ -227,6 +227,7 @@
   };
   Sim.sos = function (reason) {
     if (S.sosActive) return;
+    Sim.stopFindMy && Sim.stopFindMy('safety', true);
     WH.SafetyPolicy?.emergency(reason);
     S.sosActive = true; WH.closeChat(); stopWalkers();
     WH.buzz('sos'); WH.beep('siren');
@@ -387,6 +388,40 @@
   };
 
   /* ───────────── family-side actions ───────────── */
+  let findMyTimer = null;
+  Sim.findMyActive = false;
+  Sim.stopFindMy = function (source = 'caregiver', preservePrompt = false) {
+    if (!Sim.findMyActive) return false;
+    Sim.findMyActive = false; S.findMyActive = false;
+    clearInterval(findMyTimer); findMyTimer = null;
+    if (!preservePrompt) WH.closePrompt(true);
+    WH.famLayer(null);
+    if (source === 'wearer') {
+      WH.famBanner({ ic: 'check', tone: 'green', title: T('findFound'), body: T('fb_ring_b') });
+      WH.feed(T('f_find_ack', { n: nm() }), 'green', 'check');
+    } else if (source === 'caregiver') WH.feed(T('f_find_stop'), 'blue', 'ring');
+    WH.MemoryData?.event('find-my-stopped', source);
+    WH.refresh();
+    return true;
+  };
+  Sim.findMy = function () {
+    if (S.sosActive) return WH.toast(T('safeSos'), 'warn');
+    if (Sim.findMyActive) return true;
+    Sim.findMyActive = true; S.findMyActive = true;
+    const pulse = () => {
+      if (!Sim.findMyActive) return;
+      if (S.sosActive) return Sim.stopFindMy('safety', true);
+      WH.buzz('strong'); WH.beep('ring');
+    };
+    pulse(); findMyTimer = setInterval(pulse, 1500);
+    WH.sysLog(T('log_find'), 'ok'); WH.MemoryData?.event('find-my-started', 'caregiver');
+    WH.devPrompt({ tone: 'blue', icon: 'ring', title: T('findTitle'), text: T('findText', { who: famName(0) }), haptic: 'strong', say: T('v_ring', { who: famName(0) }),
+      buttons: [{ label: T('findStop'), tone: 'green', icon: 'check', fn: () => Sim.stopFindMy('wearer') }] });
+    WH.famLayer(`<div class="find-watch"><div class="find-watch-ring">${ic('ring', 56)}</div><h3>${T('findCareTitle', { n: esc(nm()) })}</h3><p>${T('findCareText')}</p><button class="btn primary" id="findMyStop">${ic('close', 18)} ${T('findStop')}</button></div>`, 'light');
+    $('#findMyStop').onclick = () => Sim.stopFindMy('caregiver');
+    WH.refresh();
+    return true;
+  };
   Sim.ringBand = function () {
     WH.buzz('strong'); WH.beep('ring'); WH.sysLog(T('log_ring'), 'ok');
     WH.devPrompt({ tone: 'blue', icon: 'ring', title: T('ringTitle'), text: T('ringText', { who: famName(0) }), haptic: 'strong', say: T('v_ring', { who: famName(0) }), secs: 12,
@@ -498,12 +533,13 @@
 
   Sim.reset = function () {
     if (WH.Guide.active) WH.Guide.stop(true);
+    Sim.stopFindMy('reset', true);
     WH.closePrompt(true); WH.closeChat(); WH.famLayer(null); $('#navPrompt').innerHTML = '';
     if (call) { clearInterval(call.iv); clearTimeout(call.auto); call = null; }
     Wander.active = false; Esc.on = false; Esc.level = 0; Esc.vmin = 0; Esc.reaskT = 0;
     WH.SafetyPolicy?.reset();
     Object.keys(Health).forEach((k) => delete Health[k]);
-    Object.assign(S, { out: false, sosActive: false, guiding: false, inCall: false, night: false, clockOffset: 0, gpsLost: false, removed: false, batt: 84, hr: 72, hrBase: 72, hrTarget: null, askCount: {} });
+    Object.assign(S, { out: false, sosActive: false, guiding: false, inCall: false, findMyActive: false, night: false, clockOffset: 0, gpsLost: false, removed: false, batt: 84, hr: 72, hrBase: 72, hrTarget: null, askCount: {} });
     S.meds.forEach((m, i) => (m.done = i === 0)); S.trail = []; WH.worlds.forEach((w) => w.setTrail([]));
     WH.setAvatar(WH.DOOR.x, WH.DOOR.z, 0, false); WH._chipLocked = false;
     WH.Inbox.reset(); $('#pFeed').innerHTML = ''; $('#csBody').innerHTML = ''; $('#pBanners').innerHTML = '';
@@ -562,7 +598,7 @@
     };
     $('#pCall').onclick = () => Sim.famCall();
     $('#pMsg').onclick = () => Sim.voiceNote();
-    $('#pRing').onclick = () => Sim.ringBand();
+    $('#pFind').onclick = () => Sim.findMy();
     $('#pCheck').onclick = () => Sim.checkIn();
   };
 })();

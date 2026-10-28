@@ -89,6 +89,8 @@ Caregiver requests show **Waiting** until the caregiver clicks the green answer 
 
 All calls, messages, location, sensor readings, map connections and emergency notifications are simulated. There are no real calls, police dispatch, GPS or medical monitoring.
 
+The caregiver phone also includes **Find My**. It makes the simulated watch ring and vibrate repeatedly until the wearer or caregiver selects **Stop ringing**. The phone shows an active finding screen, both outcomes are recorded in the local activity history, and SOS immediately interrupts the finding alert. This is a nearby-device classroom simulation; it does not locate, connect to or ring a real watch.
+
 ## Presentation walkthrough
 
 Choose **Live demo stage → Memory Garden + Safe Return**. The persistent presenter panel provides Next, Back, Reset and Exit with explanations. Nine scenes cover opening the garden, Morning Market reminiscence, growing a flower, an unanswered/assisted check-in, requesting return, an actual route containing the approved market, the cannot-see branch, low-confidence location and caregiver acknowledgement. At the help scene select Help me get home; at the market choose I see it or I don't see it. Next also supports presenting each branch independently.

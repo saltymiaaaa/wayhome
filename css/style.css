@@ -438,6 +438,7 @@ input[type=range]{width:100%;accent-color:var(--cyan);height:28px}
 .p-layer{position:absolute;inset:0;z-index:50;display:none;border-radius:inherit}.p-layer.on{display:block}
 .pl{position:absolute;inset:0;overflow:auto;animation:fadeIn .3s}
 .pl.red{background:linear-gradient(170deg,#ef4444,#7f1d1d);color:#fff}.pl.dark{background:linear-gradient(170deg,#1e293b,#0f172a);color:#fff}.pl.light{background:#f2f4fa;color:#1b2540;padding:60px 18px 18px}
+.find-watch{text-align:center;display:grid;gap:14px;align-content:center;min-height:100%}.find-watch-ring{width:104px;height:104px;margin:auto;border-radius:50%;display:grid;place-items:center;color:#fff;background:#35664d;box-shadow:0 0 0 0 rgba(53,102,77,.4);animation:findWatchPulse 1.2s ease-out infinite}.find-watch h3{font-size:22px}.find-watch p{font-size:14px;line-height:1.5;color:#52645c}.find-watch .btn{justify-self:center}@keyframes findWatchPulse{70%{box-shadow:0 0 0 24px rgba(53,102,77,0)}100%{box-shadow:0 0 0 0 rgba(53,102,77,0)}}
 .alert-full{display:flex;flex-direction:column;align-items:center;gap:12px;padding:70px 22px 24px;text-align:center}
 .af-siren{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);animation:sirenp 1s infinite}
 @keyframes sirenp{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.5)}50%{box-shadow:0 0 0 26px rgba(255,255,255,0)}}
