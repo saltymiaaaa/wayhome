@@ -103,6 +103,8 @@
   </header>
 
   <div class="stage" id="stage" data-view="both">
+    <!-- floating way back into a collapsed demo director -->
+    <button class="chip-btn dir-show" id="dirShow"><span data-ic="spark" data-sz="16"></span><span data-i18n="director">Demo director</span></button>
     <!-- director -->
     <aside class="director" id="director">
       <div class="dir-head"><span class="rec"></span><b data-i18n="director">Demo director</b><button class="dir-toggle" id="dirToggle" data-ic="close" data-sz="16"></button></div>
@@ -168,26 +170,46 @@
         <div class="notch"></div>
         <div class="pscreen" id="pscreen">
           <div class="p-banners" id="pBanners"></div>
-          <div class="p-head">
-            <div><div class="p-hi" data-i18n="famHi">Caring for</div><div class="p-name" id="pName">Grandma Li</div></div>
-            <span class="p-chip ok" id="pChip">Safe</span>
+
+          <!-- Overview -->
+          <div class="ptab on" data-pane="overview">
+            <div class="p-head">
+              <div><div class="p-hi" data-i18n="famHi">Caring for</div><div class="p-name" id="pName">Grandma Li</div></div>
+              <span class="p-chip ok" id="pChip">Safe</span>
+            </div>
+            <div class="p-map"><div id="famMap" class="p-mapbox"></div><div class="p-maptag" id="famMapTag"></div></div>
+            <div class="p-stats">
+              <div class="ps"><span data-ic="heart" data-sz="18"></span><b id="pHr">72</b><i>bpm</i></div>
+              <div class="ps"><span data-ic="pin" data-sz="18"></span><b id="pDist">0.1</b><i>km</i></div>
+              <div class="ps"><span data-ic="battery" data-sz="18"></span><b id="pBat">84</b><i>%</i></div>
+            </div>
+            <div class="p-ecg"><canvas id="ecg" width="320" height="56"></canvas><span class="ecg-tag" id="ecgTag">Normal</span></div>
+            <div class="p-ladder" id="pLadder"></div>
+            <div class="p-actions">
+              <button class="pa" id="pCall"><span data-ic="phone" data-sz="22"></span><b data-i18n="paCall">Call</b></button>
+              <button class="pa" id="pMsg"><span data-ic="volume" data-sz="22"></span><b data-i18n="paMsg">Voice note</b></button>
+              <button class="pa" id="pRing"><span data-ic="ring" data-sz="22"></span><b data-i18n="paRing">Ring band</b></button>
+              <button class="pa" id="pCheck"><span data-ic="eye" data-sz="22"></span><b data-i18n="paCheck">Check in</b></button>
+            </div>
           </div>
-          <div class="p-map"><div id="famMap" class="p-mapbox"></div><div class="p-maptag" id="famMapTag"></div></div>
-          <div class="p-stats">
-            <div class="ps"><span data-ic="heart" data-sz="18"></span><b id="pHr">72</b><i>bpm</i></div>
-            <div class="ps"><span data-ic="pin" data-sz="18"></span><b id="pDist">0.1</b><i>km</i></div>
-            <div class="ps"><span data-ic="battery" data-sz="18"></span><b id="pBat">84</b><i>%</i></div>
+
+          <!-- Contacts -->
+          <div class="ptab" data-pane="contacts"><div class="pane-body" id="cgContacts"></div></div>
+          <!-- Safety -->
+          <div class="ptab" data-pane="safety"><div class="pane-body" id="cgSafety"></div></div>
+          <!-- Landmarks -->
+          <div class="ptab" data-pane="landmarks"><div class="pane-body" id="cgLandmarks"></div></div>
+          <!-- Memories -->
+          <div class="ptab" data-pane="memories"><div class="pane-body" id="cgMemories"></div></div>
+
+          <!-- Activity history -->
+          <div class="ptab" data-pane="activity">
+            <div class="p-feed-head"><b data-i18n="activity">Activity</b><button class="cgb" id="cgClearFeed" aria-label="Clear"><span data-ic="trash" data-sz="14"></span></button></div>
+            <div class="p-feed" id="pFeed"></div>
+            <div class="pane-body" id="cgHistory"></div>
           </div>
-          <div class="p-ecg"><canvas id="ecg" width="320" height="56"></canvas><span class="ecg-tag" id="ecgTag">Normal</span></div>
-          <div class="p-ladder" id="pLadder"></div>
-          <div class="p-actions">
-            <button class="pa" id="pCall"><span data-ic="phone" data-sz="22"></span><b data-i18n="paCall">Call</b></button>
-            <button class="pa" id="pMsg"><span data-ic="volume" data-sz="22"></span><b data-i18n="paMsg">Voice note</b></button>
-            <button class="pa" id="pRing"><span data-ic="ring" data-sz="22"></span><b data-i18n="paRing">Ring band</b></button>
-            <button class="pa" id="pCheck"><span data-ic="eye" data-sz="22"></span><b data-i18n="paCheck">Check in</b></button>
-          </div>
-          <div class="p-feed-head"><b data-i18n="activity">Activity</b></div>
-          <div class="p-feed" id="pFeed"></div>
+
+          <nav class="ptabs" id="pTabs" aria-label="Caregiver sections"></nav>
           <div class="p-layer" id="pLayer"></div>
         </div>
       </div>
@@ -311,6 +333,7 @@
 <script src="js/memory-ui.js"></script>
 <script src="js/memory-safety.js"></script>
 <script src="js/memory-demo.js"></script>
+<script src="js/caregiver.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

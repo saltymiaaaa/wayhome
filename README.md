@@ -24,6 +24,28 @@ This serves the site and `/api` on http://127.0.0.1:8765/. Caregiver metadata is
 
 GitHub Pages requires no build step: publish the repository root containing `index.html`. Paths are relative, including the bundled Three.js library. The only external display dependency is an optional Google font with a system fallback. This change does not publish or push the repository automatically.
 
+## Product structure
+
+The prototype is organized as two experiences instead of separate demos:
+
+```
+Wearer experience (the band)
+├── Home            status, safe-zone map, medicine reminder, SOS
+├── Companion       voice-first chat with personal phrases
+├── Memory Garden   reminiscence activities and the growing garden
+└── Guided return   full-screen landmark-photo route home
+
+Caregiver experience (the family phone, tabbed)
+├── Overview        live map, heart rate, battery, escalation ladder, quick actions
+├── Contacts        add, edit, validate, pair, delete and reorder contacts
+├── Safety          safe radius, grace time, night curfew, escalation ladder timings
+├── Landmarks       browse, add, edit, delete and approve the familiar places
+├── Memories        library summary and direct entry to the garden and library
+└── Activity        live event feed plus garden and check-in history
+```
+
+On desktop the Live demo stage shows the band and the phone side by side in one viewport; one event (a fall, a zone breach, a call) visibly affects both devices at once. The demo director collapses on narrower desktops and can be restored with its floating button.
+
 ## Memory Garden
 
 Sprout is a customizable, gently animated companion with happy, curious, thinking, reassuring and concerned expressions. Change its name to any preferred name in either **Caregiver setup → Companion voice** or **Memory Library → Companion settings**. The same setting also persists through the optional backend. Companion settings include language, color theme, voice, interaction style, favorite activities and check-in delay.
@@ -53,7 +75,7 @@ Guidance offers **3D Presenter View** and **Wearer View**. Both use the same rou
 
 Lightweight metadata, preferences, activity counts, garden objects and the latest 300 local events use `localStorage` (`wayhome.memory.v1`). Uploaded JPEG/PNG/WebP/GIF images (up to 5 MB) and audio (up to 25 MB) use IndexedDB (`wayhome-media`). When the Node backend is running on the same origin, the same records and new media uploads are mirrored to its data directory. Music uploads require an authorization checkbox. Static GitHub Pages deployments remain browser-local and do not provide cloud backup or device synchronization. **Clear local memories** asks for an explicit second action and removes this feature's media and metadata, including garden progress. It does not reset unrelated setup fields.
 
-Each place has independent **memory** and **navigation** approvals. Fourteen approved sample landmarks provide broader prototype route coverage. Navigation approval requires an integer 3D grid position (i/j from 0 to 12); an optional waypoint is an `i,j` pair. The route uses only navigation-approved, positioned landmarks close to its actual path, and checks an optional waypoint lies on that path. Memory-only photos cannot become navigation landmarks through game answers. Setup-created places begin with both approvals off; review them in the library. Editing the library during guidance pauses and rebuilds the route, so revoked content cannot remain in the current instruction.
+Each place has independent **memory** and **navigation** approvals. Twenty-eight approved sample landmarks provide broader prototype route coverage, and the same records can be reviewed, edited, approved or revoked from **Caregiver phone → Landmarks** as well as the library. Navigation approval requires an integer 3D grid position (i/j from 0 to 12); an optional waypoint is an `i,j` pair. The route uses only navigation-approved, positioned landmarks close to its actual path, and checks an optional waypoint lies on that path. Memory-only photos cannot become navigation landmarks through game answers. Setup-created places begin with both approvals off; review them in the library. Editing the library during guidance pauses and rebuilds the route, so revoked content cannot remain in the current instruction.
 
 ## Check-in, safe return and simulated handover
 
@@ -71,7 +93,18 @@ All calls, messages, location, sensor readings, map connections and emergency no
 
 Choose **Live demo stage → Memory Garden + Safe Return**. The persistent presenter panel provides Next, Back, Reset and Exit with explanations. Nine scenes cover opening the garden, Morning Market reminiscence, growing a flower, an unanswered/assisted check-in, requesting return, an actual route containing the approved market, the cannot-see branch, low-confidence location and caregiver acknowledgement. At the help scene select Help me get home; at the market choose I see it or I don't see it. Next also supports presenting each branch independently.
 
-Reset clears transient simulation state while preserving the library, preferences and accumulated garden. Returning to the flower scene within a walkthrough does not add duplicate completion rewards. The scenario never silently approves a revoked landmark; restore Morning Market permissions in the library if you intentionally changed them. At the final handover, restore any remaining GPS/zone concerns before confirming safety. Exit closes the presenter panel without silently resolving a safety concern.
+Reset clears transient simulation state while preserving the library, preferences and accumulated garden. Returning to the flower scene within a walkthrough does not add duplicate completion rewards. The scenario never silently approves a revoked landmark; restore Morning Market permissions in the library if you intentionally changed them. At the final handover, restore any remaining GPS/zone concerns before confirming safety. **Exit** stops the presenter panel and cleans up the transient simulation state: it closes the garden and library, aborts calls and wearable prompts, stops active guidance, clears the GPS/band/zone flags and any unresolved check-in, resets the safety engine and returns to the side-by-side stage. The library, preferences, garden progress and the activity feed are preserved.
+
+## Known limitations
+
+This is a classroom prototype, not a field-ready product:
+
+- GitHub Pages storage is browser-local and does not synchronize devices.
+- The optional backend has no production authentication or user accounts.
+- Calls, messages, location, sensors and emergencies are simulations.
+- Landmark data are fictional prototype data, not verified real-world navigation data.
+- Automated tests do not validate WebGL rendering or visual usability.
+- A field-ready system would additionally need privacy controls, encryption, consent management, audit logging, reliable mapping, accessibility testing and extensive trials with people living with dementia and their caregivers.
 
 ## Accessibility and localization
 
@@ -104,5 +137,6 @@ These tests do not render WebGL, exercise a real IndexedDB browser implementatio
 - `js/memory-safety.js`: interruption priority, check-in, location uncertainty and handover.
 - `js/memory-demo.js`: presenter-directed classroom walkthrough.
 - `js/guide.js`, `js/sim.js`: existing 3D guidance and safety engines, extended in place.
+- `js/caregiver.js`: caregiver phone sections — contacts, safety, landmarks, memories and activity history.
 - `js/boot.js`, `index.html`: integration; `js/i18n.js`, `js/i18n_id.js`: translations.
 - `tests/memory.test.cjs`: dependency-free behavioral tests.

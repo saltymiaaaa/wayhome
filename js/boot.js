@@ -8,6 +8,8 @@
     S.view = view || S.view; $('#stage').dataset.view = S.view; $('#device').classList.toggle('nostraps', S.view === 'elder');
     $$('#viewSeg button').forEach((b) => b.classList.toggle('on', b.dataset.view === S.view));
     if (S.view === 'inbox') WH.Inbox.seen();
+    // keep every device visible on smaller desktops: collapse the director, expandable again
+    if (window.innerWidth < 1240) $('#stage').classList.add('dir-off');
     WH.go('stage'); WH.Sim.renderLadder(); WH.renderRemind(); WH.refresh();
     setTimeout(() => { WH.fit(); }, 60); setTimeout(() => { WH.fit(); }, 400);
     if (!WH._hinted) { WH._hinted = true; setTimeout(() => WH.toast(ic('spark', 18) + ' ' + T('t_stage_hint'), 'ok', 6500), 800); }
@@ -46,7 +48,8 @@
     $('#btnIdeas').onclick = () => { renderIdeas(); $('#mdIdeas').classList.add('on'); };
     $('#ideasClose').onclick = () => $('#mdIdeas').classList.remove('on');
     $$('.modal').forEach((m) => m.addEventListener('pointerdown', (e) => { if (e.target === m) m.classList.remove('on'); }));
-    $('#dirToggle').onclick = () => $('#director').classList.toggle('min');
+    $('#dirToggle').onclick = () => { $('#stage').classList.add('dir-off'); setTimeout(WH.fit, 60); };
+    $('#dirShow').onclick = () => { $('#stage').classList.remove('dir-off'); setTimeout(WH.fit, 60); };
     window.addEventListener('resize', () => WH.fit());
   }
 
@@ -57,6 +60,7 @@
     if(!$('#memoryLibrary').hidden) WH.MemoryLibrary.render();
     WH.MemoryDemo.render();$('#navCall').setAttribute('aria-label',T('mgFamily'));$('#navSos').setAttribute('aria-label','SOS');
     WH.refresh(); WH.Sim.renderLadder(); WH.renderRemind(); WH.renderChips && $('#csChips') && WH.renderChips();
+    if (WH.Caregiver) { WH.Caregiver.buildTabs(); WH.Caregiver.render(); }
     $$('.lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === S.lang));
     if (S.screen === 'setup') WH.Setup.render();
     if (WH.Guide.active) WH.Guide.renderAll();
@@ -85,7 +89,7 @@
 
     WH.Inbox.render();
     WH.Memory.init(); WH.MemoryLibrary.init(); WH.MemoryDemo.init(); WH.MemorySafety.init();
-    WH.Sim.bind(); WH.Guide.bind(); WH.Setup.bind(); bindCommon();
+    WH.Sim.bind(); WH.Guide.bind(); WH.Setup.bind(); WH.Caregiver.init(); bindCommon();
     $('#memoryOpen').onclick=()=>WH.Memory.open();
     $$('[data-memory-library]').forEach(b=>b.onclick=()=>WH.MemoryLibrary.open());
     $('#memoryDemoStart').onclick=()=>WH.MemoryDemo.start();
