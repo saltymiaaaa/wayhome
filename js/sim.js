@@ -506,11 +506,11 @@
     if (S.guiding) return;
     if (WH.distHomeKm() < 0.1 && !S.out) {
       WH.devPrompt({ tone: 'blue', icon: 'home', title: T('atHomeTitle'), text: T('atHomeText'), secs: 0, say: T('v_athome', { n: nm() }),
-        buttons: [{ label: T('practice'), tone: 'green', icon: 'walk', fn: () => { Sim.teleportFar(); setTimeout(() => WH.Guide.start({ practice: true }), 400); } }, { label: T('noThanks'), tone: 'ghost', icon: 'close', fn: () => {} }] });
+        buttons: [{ label: T('practice'), tone: 'green', icon: 'walk', fn: () => { Sim.teleportFar(); setTimeout(() => WH.Guide.start({ practice: true, embedded: true }), 400); } }, { label: T('noThanks'), tone: 'ghost', icon: 'close', fn: () => {} }] });
       return;
     }
     WH.devPrompt({ tone: 'blue', icon: 'nav', title: T('goHomeQ'), text: T('goHomeText'), say: T('v_gohome'), haptic: 'soft',
-      buttons: [{ label: T('yesGo'), tone: 'green', icon: 'home', fn: () => { Wander.active = false; WH.Guide.start(); } }, { label: T('notNow'), tone: 'ghost', icon: 'close', fn: () => {} }] });
+      buttons: [{ label: T('yesGo'), tone: 'green', icon: 'home', fn: () => { Wander.active = false; WH.Guide.start({ embedded: true }); } }, { label: T('notNow'), tone: 'ghost', icon: 'close', fn: () => {} }] });
   };
   Sim.pressCall = function () { Sim.callFamily({ reason: 'user' }); };
 

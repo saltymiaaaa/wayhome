@@ -145,7 +145,7 @@
       <div><span>${T('sIdle')} <b class="val" id="vIdle">${S.sensors.idleMin} min</b></span><input type="range" id="fIdle" min="5" max="60" step="5" value="${S.sensors.idleMin}"></div></div></div>`;
   }
   function b5() {
-    $('#fAsName').oninput = (e) => { S.assistant.name = e.target.value || 'Sprout'; WH.MemoryData.state.prefs.name=S.assistant.name; WH.MemoryData.save(); };
+    $('#fAsName').oninput = (e) => { S.assistant.name = e.target.value || 'Momo'; WH.MemoryData.state.prefs.name=S.assistant.name; WH.MemoryData.save(); };
     $$('#voiceSeg button').forEach((b) => (b.onclick = () => { S.assistant.voice = b.dataset.v; WH.say(T('v_sample', { n: S.callName })); Setup.render(); }));
     $$('[data-act]').forEach((s) => (s.onchange = () => { S.phrases[+s.dataset.act].action = s.value; Setup.render(); }));
     $$('[data-who]').forEach((s) => (s.onchange = () => { S.phrases[+s.dataset.who].who = +s.value; }));

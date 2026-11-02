@@ -4,7 +4,7 @@
   const clone = x => JSON.parse(JSON.stringify(x));
   const seedPlaces=clone(WH.S.landmarks);
   const D = WH.MemoryData = { media: new Map(), urls: new Map(), persistent: true };
-  D.defaults = () => ({version: 1, prefs: {name:'Sprout', language:'en', theme:'sage', voice:true, style:'gentle', favorites:['places'], checkDelay:15,nonurgentDelay:8},
+  D.defaults = () => ({version: 1, prefs: {name:'Momo', language:'en', theme:'sage', voice:true, style:'gentle', favorites:['places'], checkDelay:15,nonurgentDelay:8},
     people:[{id:'sample-mei', name:'Mei', relationshipKey:'mgDaughter', storyKey:'mgMeiStory', moreKey:'mgMeiMore', relatedPlaceId:'l3',relatedMusicId:'sample-music',approved:true, sample:true}],
     places:seedPlaces.map(p => ({guidanceCue:p.name,recognitionCue:`Look for ${p.name}.`,visibility:'day',salience:3,...p, name:p.id === 'l3' ? 'Morning Market' : p.name,nameKey:p.id==='l3'?'mgMarket':null, storyKey:'mgPlaceStory', memoryApproved:true, navigationApproved:true, sample:true, waypoint:{i:p.i,j:p.j}})),
     music:[{id:'sample-music',nameKey:'mgSong',storyKey:'mgNoAudio',approved:true,sample:true}],

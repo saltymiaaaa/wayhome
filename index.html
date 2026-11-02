@@ -102,7 +102,20 @@
     </div>
   </header>
 
-  <div class="stage" id="stage" data-view="both">
+  <div class="modebar" aria-label="Caregiver device mode controls">
+    <div class="modebar-copy">
+      <span class="modebar-kicker" data-i18n="modeCaregiver">Caregiver controls</span>
+      <strong data-i18n="modeChoose">Choose what the wearer sees</strong>
+    </div>
+    <div class="mode-options" id="modeOptions">
+      <button class="mode-option on" data-mode="normal"><span data-ic="settings" data-sz="17"></span><span><b data-i18n="modeNormal">Normal</b><small data-i18n="modeNormalD">All features</small></span></button>
+      <button class="mode-option" data-mode="focus"><span data-ic="heart" data-sz="17"></span><span><b data-i18n="modeFocus">Simple</b><small data-i18n="modeFocusD">Only two choices</small></span></button>
+      <button class="mode-option" data-mode="dialogue"><span data-ic="chat" data-sz="17"></span><span><b data-i18n="modeDialogue">Dialogue</b><small data-i18n="modeDialogueD">Chat with Momo</small></span></button>
+    </div>
+    <div class="mode-owner"><span data-ic="shield" data-sz="16"></span><span data-i18n="modeOwner">Set by caregiver</span></div>
+  </div>
+
+  <div class="stage dir-off" id="stage" data-view="both">
     <!-- floating way back into a collapsed demo director -->
     <button class="chip-btn dir-show" id="dirShow"><span data-ic="spark" data-sz="16"></span><span data-i18n="director">Demo director</span></button>
     <!-- director -->
@@ -149,9 +162,40 @@
             <button class="bigbtn b-sos" id="bSos"><span class="bb-ic" data-ic="sos" data-sz="40"></span><span class="bb-tx"><b data-i18n="bSos">HELP / SOS</b><i data-i18n="bSosD">Tell everyone now</i></span></button>
             <div class="d-remind" id="dRemind"></div>
 
+            <section class="wearer-mode-panel focus-panel" aria-label="Simple mode">
+              <span class="wearer-mode-tag" data-i18n="modeFocus">Simple</span>
+              <h2 data-i18n="simplePrompt">What do you need?</h2>
+              <button class="simple-action home" id="focusHome"><span data-ic="home" data-sz="38"></span><span><b data-i18n="bHome">GO HOME</b><small data-i18n="bHomeD">I will guide you</small></span></button>
+              <button class="simple-action call" id="simpleCall"><span data-ic="phone" data-sz="38"></span><span><b data-i18n="bCall">CALL</b><small data-i18n="bCallD">Family</small></span></button>
+            </section>
+
+            <section class="wearer-mode-panel dialogue-panel" aria-label="Dialogue mode">
+              <div class="momo-orb"><span data-ic="assistant" data-sz="58"></span></div>
+              <span class="wearer-mode-tag" data-i18n="modeDialogue">Dialogue</span>
+              <h2 data-i18n="dialogueHello">Hi, I’m Momo.</h2>
+              <p data-i18n="dialoguePrompt">Want to chat, ask a question, or tell me how you feel?</p>
+              <button class="dialogue-talk" id="dialogueTalk"><span data-ic="mic" data-sz="28"></span><span data-i18n="dialogueStart">Talk with Momo</span></button>
+            </section>
+
+            <section class="watch-guide" id="watchGuide" aria-live="polite">
+              <div class="wg-top"><span class="wg-live"><i></i><span data-i18n="watchGuiding">Guiding home</span></span><span id="wgStep">1/4</span></div>
+              <div class="wg-arrow" id="wgArrow"><span data-ic="walk" data-sz="54"></span></div>
+              <div class="wg-distance" id="wgDistance">120 m</div>
+              <h2 id="wgMain">Continue straight</h2>
+              <p id="wgSub">Toward the familiar market</p>
+              <div class="wg-progress"><i id="wgProgress"></i></div>
+              <button class="wg-confirm" id="wgConfirm"><span data-ic="check" data-sz="18"></span><span data-i18n="watchReached">I see it</span></button>
+              <div class="wg-actions">
+                <button id="wgHelp"><span data-ic="phone" data-sz="17"></span><span data-i18n="mgHelp">I need help</span></button>
+                <button id="wgEnd"><span data-ic="check" data-sz="17"></span><span data-i18n="mgCancelGuide">I know my way</span></button>
+              </div>
+            </section>
+
+            <button class="wearer-mode-change" id="wearerModeChange"><span data-ic="spark" data-sz="16"></span><span data-i18n="modeChange">Change mode</span></button>
+
             <div class="d-layer" id="devLayer"></div>
             <div class="d-sheet" id="chatSheet">
-              <div class="cs-head"><div class="cs-ava" data-ic="assistant" data-sz="26"></div><div><b id="csName">Na</b><span data-i18n="csSub">Your companion</span></div><button class="cs-x" id="csClose" data-ic="close" data-sz="22"></button></div>
+              <div class="cs-head"><div class="cs-ava" data-ic="assistant" data-sz="26"></div><div><b id="csName">Momo</b><span data-i18n="csSub">Your companion</span></div><button class="cs-x" id="csClose" data-ic="close" data-sz="22"></button></div>
               <div class="cs-body" id="csBody"></div>
               <div class="cs-wave" id="csWave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
               <div class="cs-say" id="csSay"></div>

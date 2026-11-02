@@ -48,7 +48,7 @@ On desktop the Live demo stage shows the band and the phone side by side in one 
 
 ## Memory Garden
 
-Sprout is a customizable, gently animated companion with happy, curious, thinking, reassuring and concerned expressions. Change its name to any preferred name in either **Caregiver setup → Companion voice** or **Memory Library → Companion settings**. The same setting also persists through the optional backend. Companion settings include language, color theme, voice, interaction style, favorite activities and check-in delay.
+Momo is a customizable, gently animated companion with happy, curious, thinking, reassuring and concerned expressions. Change its name to any preferred name in either **Caregiver setup → Companion voice** or **Memory Library → Companion settings**. The same setting also persists through the optional backend. Companion settings include language, color theme, voice, interaction style, favorite activities and check-in delay.
 
 - **Familiar Faces:** approved fictional illustrations or uploaded family photographs. Yes, Not sure and Tell me more all lead to supportive caregiver-provided stories. Another memory selects the next approved record.
 - **My Happy Places:** approved place pictures and personal stories. These interactions never start a route or change navigation permissions.

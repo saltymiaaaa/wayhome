@@ -18,9 +18,9 @@
   WH.fit = function () {
     const dev = $('#device'), df = $('#devFit');
     if (dev && df && df.clientHeight > 50) {
-      const bare = S.view === 'elder', total = dev.offsetHeight + (bare ? 24 : 200);
+      const bare = S.view === 'elder', total = dev.offsetHeight + (bare ? 18 : 132);
       const k = Math.max(0.35, Math.min(1, (df.clientHeight - 4) / total, df.clientWidth / (dev.offsetWidth + 50)));
-      dev.style.transform = 'translateY(' + ((bare ? 10 : 100) * k).toFixed(1) + 'px) scale(' + k.toFixed(3) + ')';
+      dev.style.transform = 'translateY(' + ((bare ? 7 : 66) * k).toFixed(1) + 'px) scale(' + k.toFixed(3) + ')';
     }
     const ph = $('#phone'), pf = $('.phone-fit');
     if (ph && pf && pf.clientHeight > 50) {
@@ -38,12 +38,29 @@
   }
 
   function bindCommon() {
+    const setMode = (mode, wearer) => {
+      S.mode = ['normal', 'focus', 'dialogue'].includes(mode) ? mode : 'normal';
+      $('#device').dataset.mode = S.mode;
+      $$('#modeOptions button').forEach((b) => b.classList.toggle('on', b.dataset.mode === S.mode));
+      if (S.mode !== 'dialogue') WH.closeChat && WH.closeChat();
+      const label = T('mode' + S.mode.charAt(0).toUpperCase() + S.mode.slice(1));
+      WH.toast(ic(wearer ? 'watch' : 'shield', 18) + ' ' + (wearer ? T('modeWearerNotice', { mode: label }) : T('modeCaregiverNotice', { mode: label })), wearer ? 'warn' : 'ok', 4200);
+      WH.sysLog((wearer ? T('modeWearerLog') : T('modeCaregiverLog')) + ': ' + label, wearer ? 'warn' : 'ok');
+      setTimeout(WH.fit, 40);
+    };
+    WH.setMode = setMode;
     $('#roleFamily').onclick = () => WH.Setup.open(1);
     $('#roleElder').onclick = () => WH.enterStage('elder');
     $('#roleStage').onclick = () => WH.enterStage('both');
     $$('[data-go]').forEach((b) => (b.onclick = () => { if (WH.Guide.active) WH.Guide.stop(true); WH.go(b.dataset.go); }));
     $('#btnSetupAgain').onclick = () => WH.Setup.open(1);
     $$('#viewSeg button').forEach((b) => (b.onclick = () => WH.enterStage(b.dataset.view)));
+    $$('#modeOptions button').forEach((b) => (b.onclick = () => setMode(b.dataset.mode, false)));
+    $('#wearerModeChange').onclick = () => { const modes = ['normal', 'focus', 'dialogue']; setMode(modes[(modes.indexOf(S.mode) + 1) % modes.length], true); };
+    $$('.direction-pad button').forEach((b) => (b.onclick = () => { WH.buzz(b.dataset.dir === 'left' ? 'left' : b.dataset.dir === 'right' ? 'right' : 'soft'); WH.say(T('dirConfirm', { direction: T('dir' + b.dataset.dir.charAt(0).toUpperCase() + b.dataset.dir.slice(1)) })); }));
+    $('#focusHome').onclick = () => WH.Sim.pressHome();
+    $('#simpleCall').onclick = () => WH.Sim.pressCall();
+    $('#dialogueTalk').onclick = () => WH.openChat();
     $$('.lang button').forEach((b) => (b.onclick = () => WH.setLang(b.dataset.lang)));
     $('#btnIdeas').onclick = () => { renderIdeas(); $('#mdIdeas').classList.add('on'); };
     $('#ideasClose').onclick = () => $('#mdIdeas').classList.remove('on');
@@ -99,6 +116,7 @@
     $('#memoryNavConfused').onclick=()=>WH.MemorySafety.confused();
     $('#memoryNavMic').onclick=()=>$('#csMic').click();
     WH.MemoryData.hydrate();
+    $('#device').dataset.mode = S.mode || 'normal';
     WH.MemoryData.syncBackend();
     WH.setLang(S.lang);
     WH.refresh();

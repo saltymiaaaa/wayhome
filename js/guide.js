@@ -113,9 +113,9 @@
 
   G.start = function (opts) {
     opts = opts || {};
-    G.practice = !!opts.practice; G.viewMode=opts.viewMode||G.viewMode||'presenter';
+    G.practice = !!opts.practice; G.embedded=opts.embedded!==false; G.viewMode=opts.viewMode||G.viewMode||'presenter';
     S.guiding = true; G.active = true; G.fails = 0; G.paused = false;
-    WH.go('nav');
+    WH.go(G.embedded ? 'stage' : 'nav');
     WH.closePrompt && WH.closePrompt(true);
     G.plan(false);
     WH.wNav.snap();
@@ -204,18 +204,20 @@
     G.state = 'arrived';
     WH.setAvatar(WH.DOOR.x, WH.DOOR.z, 0, false);
     WH.beep('ok');
+    WH.say(T('v_home', { n: S.callName }));
+    if(G.embedded){G.renderWatch();WH.Sim.onArrived&&WH.Sim.onArrived();return;}
     const el = $('#arrive');
     el.innerHTML = `<div class="arr-card"><div class="arr-ic">${ic('home', 84)}</div><h1>${T('arriveTitle')}</h1><p>${T('arriveText', { n: S.callName })}</p><div class="arr-fam">${ic('check', 22)} ${T('arriveFam')}</div><button class="btn primary big" id="arrDone">${T('done')}</button></div><div class="confetti"></div>`;
     const cf = $('.confetti', el); let h = '';
     for (let i = 0; i < 46; i++) h += `<i style="left:${Math.random() * 100}%;background:hsl(${Math.random() * 360},85%,60%);animation-delay:${(Math.random() * 1.2).toFixed(2)}s;animation-duration:${(2.4 + Math.random() * 2).toFixed(2)}s"></i>`;
     cf.innerHTML = h; el.classList.add('on');
-    WH.say(T('v_home', { n: S.callName }));
     $('#arrDone').onclick = () => { el.classList.remove('on'); G.stop(true); };
     WH.Sim.onArrived && WH.Sim.onArrived();
   };
 
   G.stop = function (arrived) {
     G.active = false; G.state = 'idle'; S.guiding = false; S.moving = false;
+    $('#device').dataset.guiding = 'false';
     WH.worlds.forEach((w) => { w.setRoute(null); w.setCrossing(null, false); });
     WH.closePrompt && WH.closePrompt(true);
     $('#navPrompt').innerHTML = '';
@@ -304,10 +306,11 @@
     const bar = $('#navBottom .nb-bar i'); if (bar) bar.style.width = Math.min(100, (G.s / G.route.total) * 100) + '%';
     const left = Math.max(0, G.route.total - G.s) * M;
     $('#navMiniTag').textContent = T('toGo', { d: Math.round(left / 10) * 10, min: Math.max(1, Math.round(left / 70)) });
+    if(G.embedded){const wd=$('#wgDistance'),wp=$('#wgProgress');if(wd&&G.state==='walking')wd.textContent=n.d>1?Math.round(n.d/5)*5+' m':'';if(wp)wp.style.width=Math.min(100,(G.s/G.route.total)*100)+'%';}
   };
   G.renderAll = function () {
     if (!G.active) return;
-    G.renderTop(); G.renderBottom(); G.renderWearer(); G.updateDyn();
+    G.renderTop(); G.renderBottom(); G.renderWearer(); G.renderWatch(); G.updateDyn();
     const reachedButton=$('#wearerNavReached');
     const target=G.nextLandmark();
     if(reachedButton&&target){
@@ -322,6 +325,21 @@
     $$speed();
   };
   G.nextLandmark=function(){return G.steps.slice(G.idx).find(st=>st.type==='look')||null;};
+  G.renderWatch=function(){
+    const dev=$('#device'),root=$('#watchGuide');if(!dev||!root||!G.active)return;
+    dev.dataset.guiding='true';
+    const st=G.cur(),n=G.nextInfo()||{},target=G.nextLandmark();
+    let main=n.main||T('keepWalking'),sub=n.sub||'',icon=n.ic||'walk',distance=n.d>1?Math.round(n.d/5)*5+' m':'';
+    let confirm=G.state==='event'&&(st?.type==='look'||st?.type==='arrive');
+    if(G.state==='arrived'){main=T('arriveTitle');sub=T('arriveFam');icon='home';distance='';confirm=true;}
+    if(G.paused){main=T('mgRoutePaused');sub=T('mgHandover');icon='stop';distance='';confirm=false;}
+    else if(S.gpsLost){main=T('mgLow');sub=T('mgLocationUncertain');icon='gps';distance='';confirm=false;}
+    else if(G.state==='detour'){main=T('offRoute');sub=T('offRouteSub');icon='uturn';distance='';confirm=false;}
+    else if(G.state==='walking'&&target){main=T('mgTowardLandmark',{name:target.lm.guidanceCue||target.lm.name});sub=T('mgLandmarkDistance',{distance:Math.max(0,Math.round((target.s-G.s)*M/5)*5)});icon='walk';distance='';}
+    $('#wgArrow').innerHTML=ic(icon,54);$('#wgDistance').textContent=distance;$('#wgMain').textContent=main;$('#wgSub').textContent=sub;
+    $('#wgStep').textContent=Math.min(G.idx+1,G.steps.length)+'/'+G.steps.length;$('#wgProgress').style.width=Math.min(100,(G.s/G.route.total)*100)+'%';
+    const btn=$('#wgConfirm');btn.classList.toggle('on',confirm);btn.querySelector('span:last-child').textContent=G.state==='arrived'?T('done'):st?.type==='arrive'?T('arriveQ'):T('watchReached');
+  };
   G.landmarkReached=function(){
     if(!G.active)return WH.toast(T('mgGuideNotActive'),'warn');
     if(G.paused||S.gpsLost||S.sosActive)return WH.toast(T('mgConfirmUnavailable'),'warn');
@@ -397,6 +415,9 @@
     $('#wearerNavCancel').onclick=()=>G.cancel();
     $('#wearerNavHelp').onclick=()=>{WH.MemorySafety.reason='help';WH.MemorySafety.offer(T('mgReasonHelp'));};
     $('#wearerNavReached').onclick=()=>G.landmarkReached();
+    $('#wgConfirm').onclick=()=>{if(G.state==='arrived')return G.stop(true);const st=G.cur();if(st?.type==='arrive')G.answerYes();else G.landmarkReached();};
+    $('#wgHelp').onclick=()=>{WH.MemorySafety.reason='help';WH.MemorySafety.offer(T('mgReasonHelp'));};
+    $('#wgEnd').onclick=()=>G.cancel();
     WH.$$('#navViewSwitch button').forEach(b=>b.onclick=()=>G.setView(b.dataset.navView));
     WH.$$('#navSpeed button').forEach((b) => (b.onclick = () => { G.speedMul = +b.dataset.sp; $$speed(); }));
     $('#navCall').onclick = () => WH.MemorySafety.handover();

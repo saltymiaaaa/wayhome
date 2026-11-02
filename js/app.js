@@ -65,12 +65,12 @@
       { id: 'm1', name: 'Amlodipine', time: '08:00', dose: '1 white pill', note: 'With breakfast', done: true },
       { id: 'm2', name: 'Donepezil', time: '14:00', dose: '1 small blue pill', note: 'Second slot of the pill box, with water', done: false }
     ],
-    assistant: { name: 'Sprout', voice: 'warm' },
+    assistant: { name: 'Momo', voice: 'warm' },
     sensors: { fallSens: 2, hrMax: 130, hrMin: 42, idleMin: 20 },
     // runtime
     pos: { x: WH.DOOR.x, z: WH.DOOR.z }, heading: 0, moving: false, out: false, night: false, showZone: true,
     hr: 72, hrBase: 72, batt: 84, gpsLost: false, removed: false, trail: [], clockOffset: 0,
-    view: 'both', screen: 'landing', guiding: false, sosActive: false, inCall: false, askCount: {}, done: false
+    view: 'both', mode: 'normal', screen: 'landing', guiding: false, sosActive: false, inCall: false, askCount: {}, done: false
   });
 
   /* ───────────── small utils ───────────── */
