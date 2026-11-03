@@ -152,14 +152,10 @@
             <div class="d-safe ok" id="dSafe"><span data-ic="shield" data-sz="24"></span><span id="dSafeTxt">You are safe</span></div>
             <div class="d-mapwrap"><div class="d-map" id="devMap"></div><div class="d-map-tag" id="devMapTag"></div></div>
             <section class="watch-memory" id="watchMemory" hidden aria-label="Memory Garden">
-              <header><div><small data-i18n="mgGarden">Your garden</small><h2 data-i18n="mgTitle">Memory Garden</h2></div><button id="watchMemoryClose" data-i18n="mgExit">Exit</button></header>
+              <header><div><small id="watchMemoryKicker">Memory practice</small><h2 id="watchMemoryTitle">My Memories</h2></div><button id="watchMemoryClose" data-i18n="mgExit">Exit</button></header>
               <div id="watchMemoryScene"></div>
-              <p id="watchMemoryMessage" data-i18n="mgQuiet">Take your time. There is no score.</p>
-              <div class="watch-memory-actions">
-                <button data-grow="flower"><span aria-hidden="true">✿</span><span data-i18n="mgPlant">Plant flower</span></button>
-                <button data-grow="tree"><span aria-hidden="true">♣</span><span data-i18n="mgTree">Add tree</span></button>
-                <button data-grow="butterfly"><span aria-hidden="true">∞</span><span data-i18n="mgButterfly">Add butterfly</span></button>
-              </div>
+              <p id="watchMemoryMessage">Practise familiar people and places together.</p>
+              <div class="watch-memory-actions" id="watchMemoryActions"></div>
             </section>
 
             <button class="bigbtn b-home" id="bHome"><span class="bb-ic" data-ic="home" data-sz="52"></span><span class="bb-tx"><b data-i18n="bHome">GO HOME</b><i data-i18n="bHomeD">I will guide you</i></span></button>
