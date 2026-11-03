@@ -8,8 +8,7 @@
     S.view = view || S.view; $('#stage').dataset.view = S.view; $('#device').classList.toggle('nostraps', S.view === 'elder');
     $$('#viewSeg button').forEach((b) => b.classList.toggle('on', b.dataset.view === S.view));
     if (S.view === 'inbox') WH.Inbox.seen();
-    // keep every device visible on smaller desktops: collapse the director, expandable again
-    if (window.innerWidth < 1240) $('#stage').classList.add('dir-off');
+    // Keep the Demo Director visible by default; the user can collapse it manually.
     WH.go('stage'); WH.Sim.renderLadder(); WH.renderRemind(); WH.refresh();
     setTimeout(() => { WH.fit(); }, 60); setTimeout(() => { WH.fit(); }, 400);
     if (!WH._hinted) { WH._hinted = true; setTimeout(() => WH.toast(ic('spark', 18) + ' ' + T('t_stage_hint'), 'ok', 6500), 800); }
