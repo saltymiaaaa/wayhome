@@ -11,7 +11,7 @@
   add('eyebrow', 'Interactive prototype', 'Bản mẫu tương tác');
   add('h1a', 'Never lost.', 'Không bao giờ lạc.');
   add('h1b', 'Always guided home.', 'Luôn được dẫn về nhà.');
-  add('lead', 'A calm companion on the wrist or around the neck for people with dementia. It watches the safe zone, talks them home step by step with landmark photos, senses falls and heart trouble, and keeps the family in the loop.', 'Một người bạn đồng hành điềm tĩnh trên cổ tay hoặc đeo cổ cho người bị sa sút trí tuệ. Theo dõi vùng an toàn, nói chuyện và dẫn về nhà từng bước bằng ảnh địa điểm quen thuộc, nhận biết té ngã và nhịp tim bất thường, và luôn báo cho người nhà.');
+  add('lead', 'A calm companion on the wrist or around the neck for people with dementia. It watches the safe zone, talks them home step by step with landmark photos, senses falls, and keeps the family in the loop.', 'Một người bạn đồng hành điềm tĩnh trên cổ tay hoặc đeo cổ cho người bị sa sút trí tuệ. Theo dõi vùng an toàn, nói chuyện và dẫn về nhà từng bước bằng ảnh địa điểm quen thuộc, nhận biết té ngã và luôn báo cho người nhà.');
   add('whoAreYou', 'Who is using this screen?', 'Ai đang dùng màn hình này?');
   add('roleFamily', 'I am family', 'Tôi là người nhà');
   add('roleFamilyD', 'Set up the profile, home, safe zone, contacts and the AI\'s personal phrases.', 'Cài đặt hồ sơ, nhà, vùng an toàn, người liên hệ và các câu nói riêng cho trợ lý AI.');
@@ -26,7 +26,7 @@
   add('ft1d', '"Do you see this gate? Turn right."', '"Bà thấy cổng này chưa? Rẽ phải nhé."');
   add('ft2', 'Voice-first companion', 'Trò chuyện bằng giọng nói');
   add('ft2d', 'Calm, personal, knows their words', 'Dịu dàng, hiểu từng câu riêng');
-  add('ft3', 'Fall and heart sensing', 'Phát hiện té ngã, nhịp tim');
+  add('ft3', 'Fall and safety sensing', 'Phát hiện té ngã và an toàn');
   add('ft3d', 'Alerts family without a button press', 'Báo người nhà không cần bấm nút');
   add('ft4', 'Escalation ladder', 'Báo động theo bậc');
   add('ft4d', 'Gentle first, loud only when needed', 'Nhẹ nhàng trước, lớn tiếng khi cần');
@@ -235,7 +235,7 @@
   add('log_sos', 'SOS triggered: {r}', 'Kích hoạt SOS: {r}');
   add('log_sos_cancel', 'SOS cancelled by the wearer', 'Người đeo đã hủy SOS');
   add('log_fall', 'IMU: impact + stillness. Fall suspected, asking the wearer.', 'Cảm biến: va đập + bất động. Nghi té ngã, đang hỏi người đeo.');
-  add('log_fall_crit', 'Fall + no motion + heart rate collapse. Skipping confirmation, escalating now.', 'Té ngã + không cử động + nhịp tim tụt. Bỏ qua xác nhận, báo động ngay.');
+  add('log_fall_crit', 'Fall + no motion. Skipping confirmation, escalating now.', 'Té ngã + không cử động. Bỏ qua xác nhận, báo động ngay.');
   add('log_hr_high', 'Heart rate {v} at rest. Family alerted directly, no button needed.', 'Nhịp tim {v} khi nghỉ. Báo thẳng người nhà, không cần bấm nút.');
   add('log_hr_low', 'Heart rate {v} at rest. Family alerted directly, no button needed.', 'Nhịp tim {v} khi nghỉ. Báo thẳng người nhà, không cần bấm nút.');
   add('log_phrase', 'Personal phrase "{p}" recognised. Action: {a}', 'Nhận ra câu riêng "{p}". Hành động: {a}');
@@ -371,7 +371,7 @@
   add('act_call', 'Call a contact', 'Gọi một người liên hệ');
   add('r_zone', 'Away from the safe zone too long', 'Ở ngoài vùng an toàn quá lâu');
   add('r_button', 'SOS button pressed', 'Bấm nút SOS');
-  add('r_fall-critical', 'Fall, no movement, abnormal heart rate', 'Té ngã, không cử động, nhịp tim bất thường');
+  add('r_fall-critical', 'Fall with no movement', 'Té ngã và không cử động');
   add('r_fall-confirmed', 'Fall, wearer asked for help', 'Té ngã, người đeo cần giúp');
   add('r_fall-noreply', 'Fall, no answer to the check', 'Té ngã, không trả lời');
   add('r_hr', 'Abnormal heart rate, no answer', 'Nhịp tim bất thường, không trả lời');
@@ -435,7 +435,7 @@
   add('fb_fall_t', 'Possible fall: {n}', 'Nghi té ngã: {n}');
   add('fb_fall_b', 'Asking her if she is OK. SOS in 20 s if no answer.', 'Đang hỏi bà có sao không. SOS sau 20 giây nếu không trả lời.');
   add('fb_fallc_t', 'Serious fall: {n}', 'Té ngã nghiêm trọng: {n}');
-  add('fb_fallc_b', 'No movement and abnormal heart rate. Calling for help now.', 'Không cử động, nhịp tim bất thường. Đang gọi cứu hộ ngay.');
+  add('fb_fallc_b', 'No movement detected. Calling for help now.', 'Không phát hiện cử động. Đang gọi cứu hộ ngay.');
   add('fb_fallok_t', '{n} is OK', '{n} ổn');
   add('fb_fallok_b', 'She confirmed after the fall.', 'Bà xác nhận sau khi té.');
   add('fb_hr_high_t', 'High heart rate: {n}', 'Nhịp tim cao: {n}');
@@ -564,7 +564,7 @@
   add('i1d', 'Family photos of real places, shown one by one with "Do you see this?".', 'Người nhà chụp ảnh nơi thật, hiện lần lượt kèm câu "Bà có thấy chỗ này không?".');
   add('i2t', 'Escalation ladder', 'Báo động theo bậc');
   add('i2d', 'Check-in on the band, then push, then SMS and call, then emergency services.', 'Hỏi thăm trên vòng, rồi thông báo, rồi SMS và gọi, rồi cấp cứu.');
-  add('i3t', 'Fall and heart rate without a button', 'Té ngã và nhịp tim không cần bấm nút');
+  add('i3t', 'Fall detection without a button', 'Phát hiện té ngã không cần bấm nút');
   add('i3d', 'Serious combinations skip the question and call for help directly.', 'Tổ hợp nguy hiểm bỏ qua câu hỏi và gọi cứu hộ ngay.');
   add('i4t', 'Personal phrases', 'Câu nói riêng của từng người');
   add('i4d', 'The AI learns each person\'s own words and variants, and maps them to actions.', 'AI học từng câu và cách nói của mỗi người, gắn với hành động.');
@@ -618,7 +618,7 @@
   add('fNotesH', 'Stage of memory loss, mobility, habits. Used to adjust the tone and pace.', 'Giai đoạn mất trí nhớ, khả năng đi lại, thói quen. Dùng để chỉnh giọng điệu và tốc độ.');
   add('fDevice', 'Device', 'Thiết bị');
   add('devWatch', 'Smart band', 'Vòng đeo tay');
-  add('devWatchD', 'Screen, heart rate, fall sensor', 'Màn hình, nhịp tim, cảm biến té ngã');
+  add('devWatchD', 'Screen, GPS, fall sensor', 'Màn hình, GPS, cảm biến té ngã');
   add('devPendant', 'Pendant', 'Mặt dây đeo cổ');
   add('devPendantD', 'Big button, speaker, fall sensor', 'Nút lớn, loa, cảm biến té ngã');
   add('s2t', 'Home and map', 'Nhà và bản đồ');

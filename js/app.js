@@ -259,13 +259,11 @@
     $('#pName').textContent = S.callName;
     $('#dTime').textContent = WH.nowStr();
     $('#csName').textContent = S.assistant.name;
-    $('#dHrV').textContent = Math.round(S.hr);
     $('#dBatV').textContent = Math.round(S.batt) + '%';
     $('#dBat').classList.toggle('low', S.batt <= 20);
     $('#dBat .ic').outerHTML = ic(S.batt <= 20 ? 'batteryLow' : 'battery', 16);
-    $('#dHr').classList.toggle('bad', S.hr > S.sensors.hrMax || S.hr < S.sensors.hrMin);
     $('#dGps').classList.toggle('off', S.gpsLost);
-    $('#pHr').textContent = Math.round(S.hr); $('#pBat').textContent = Math.round(S.batt);
+    $('#pBat').textContent = Math.round(S.batt);
     const d = WH.distHomeKm(); $('#pDist').textContent = d < 0.05 ? '0.0' : d.toFixed(2);
     $('#device').classList.toggle('removed', S.removed);
     $('#device').classList.toggle('pendant', S.device === 'pendant');
@@ -279,8 +277,6 @@
     $('#famMapTag').textContent = S.gpsLost ? T('gpsLastSeen') : S.out ? T('mapOut', { d: WH.distHomeKm().toFixed(2) }) : T('mapNear');
     if (!S.sosActive && !WH._chipLocked) WH.setChip(S.guiding ? T('chipGuide') : S.out ? T('chipOut') : S.removed ? T('chipRemoved') : T('chipSafe'), S.guiding ? 'blue' : S.out || S.removed ? 'red' : 'ok');
     WH.renderRemind && WH.renderRemind();
-    const hrc = S.hr > S.sensors.hrMax || S.hr < S.sensors.hrMin;
-    const tg = $('#ecgTag'); tg.textContent = hrc ? T('ecgBad') : T('ecgOk'); tg.className = 'ecg-tag ' + (hrc ? 'bad' : '');
   };
 
   /* avatar movement bookkeeping */

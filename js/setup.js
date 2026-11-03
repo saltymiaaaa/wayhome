@@ -138,10 +138,8 @@
     <div class="fld"><label>${ic('pill', 16)} ${T('fMeds')}</label><p class="hint">${T('fMedsH')}</p>
     <div class="meds">${S.meds.map((m, i) => `<div class="md">${ic('pill', 22)}<div><b>${esc(m.name)} · ${esc(m.time)}</b><span>${esc(m.dose)}. ${esc(m.note)}</span></div><button class="x" data-rmm="${i}">${ic('trash', 16)}</button></div>`).join('')}</div>
     <div class="add-md">${inp('mName', '', 'text', T('mName'))}${inp('mTime', '12:00', 'time')}${inp('mDose', '', 'text', T('mDose'))}<button class="btn ghost" id="btnAddM">${ic('plus', 18)} ${T('add')}</button></div></div>
-    <div class="fld"><label>${ic('pulse', 16)} ${T('fSensors')}</label><div class="sens">
+    <div class="fld"><label>${ic('shield', 16)} ${T('fSensors')}</label><div class="sens">
       <div><span>${T('sFall')}</span><div class="seg wide" id="fallSeg">${[1, 2, 3].map((n) => `<button data-n="${n}" class="${S.sensors.fallSens === n ? 'on' : ''}">${T('sens' + n)}</button>`).join('')}</div></div>
-      <div><span>${T('sHrMax')} <b class="val" id="vHrMax">${S.sensors.hrMax}</b></span><input type="range" id="fHrMax" min="100" max="170" step="5" value="${S.sensors.hrMax}"></div>
-      <div><span>${T('sHrMin')} <b class="val" id="vHrMin">${S.sensors.hrMin}</b></span><input type="range" id="fHrMin" min="30" max="60" step="1" value="${S.sensors.hrMin}"></div>
       <div><span>${T('sIdle')} <b class="val" id="vIdle">${S.sensors.idleMin} min</b></span><input type="range" id="fIdle" min="5" max="60" step="5" value="${S.sensors.idleMin}"></div></div></div>`;
   }
   function b5() {
@@ -158,7 +156,7 @@
     $$('[data-rmm]').forEach((b) => (b.onclick = () => { S.meds.splice(+b.dataset.rmm, 1); Setup.render(); }));
     $('#btnAddM').onclick = () => { const n = $('#mName').value.trim(); if (!n) return WH.toast(T('needMed'), 'warn'); S.meds.push({ id: 'm' + uid++, name: n, time: $('#mTime').value, dose: $('#mDose').value || '1', note: '', done: false }); Setup.render(); };
     $$('#fallSeg button').forEach((b) => (b.onclick = () => { S.sensors.fallSens = +b.dataset.n; Setup.render(); }));
-    [['fHrMax', 'hrMax', 'vHrMax', ''], ['fHrMin', 'hrMin', 'vHrMin', ''], ['fIdle', 'idleMin', 'vIdle', ' min']].forEach(([id, k, v, u]) => { $('#' + id).oninput = (e) => { S.sensors[k] = +e.target.value; $('#' + v).textContent = e.target.value + u; }; });
+    [['fIdle', 'idleMin', 'vIdle', ' min']].forEach(([id, k, v, u]) => { $('#' + id).oninput = (e) => { S.sensors[k] = +e.target.value; $('#' + v).textContent = e.target.value + u; }; });
   }
 
   /* ── step 6: review + pair device ── */

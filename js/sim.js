@@ -242,7 +242,7 @@
     WH.buzz('sos');
     const c0 = WH.contact(0);
     WH.famLayer(`<div class="alert-full"><div class="af-siren">${ic('siren', 64)}</div><h2>${T('af_title', { n: esc(nm()) })}</h2><p class="af-reason">${T('r_' + reason)}</p>
-      <div class="af-grid"><div><i>${ic('heart', 18)}</i><b>${Math.round(S.hr)}</b><span>bpm</span></div><div><i>${ic('pin', 18)}</i><b>${WH.distHomeKm().toFixed(2)}</b><span>km</span></div><div><i>${ic('battery', 18)}</i><b>${Math.round(S.batt)}</b><span>%</span></div></div>
+      <div class="af-grid"><div><i>${ic('pin', 18)}</i><b>${WH.distHomeKm().toFixed(2)}</b><span>km</span></div><div><i>${ic('battery', 18)}</i><b>${Math.round(S.batt)}</b><span>%</span></div></div>
       <div class="af-where">${ic('pin', 16)} ${esc(WH.whereText())}</div>
       <button class="af-btn red" id="afCall">${ic('phone', 24)} ${T('af_call', { n: esc(nm()) })}</button>
       <button class="af-btn" id="afWay">${ic('walk', 22)} ${T('af_way')}</button>
@@ -573,7 +573,7 @@
   Sim.buildDirector = function () {
     const groups = [
       { t: 'dg_move', items: [['walk', 'dir_wander', () => Sim.wander()], ['pin', 'dir_teleport', () => Sim.teleportFar()], ['clock', 'dir_ffwd', () => { if (Esc.on) { Esc.vmin += 8;if(WH.SafetyPolicy.incident?.kind==='geofence')WH.SafetyPolicy.elapsed+=8; WH.sysLog('+8 virtual minutes', 'warn'); } else WH.toast(T('t_needOut'), 'warn'); }]] },
-      { t: 'dg_safety', items: [['alert', 'dir_fall', () => Sim.fall(false)], ['siren', 'dir_fallc', () => Sim.fall(true)], ['pulse', 'dir_hrh', () => Sim.hrAbnormal('high')], ['heart', 'dir_hrl', () => Sim.hrAbnormal('low')]] },
+      { t: 'dg_safety', items: [['alert', 'dir_fall', () => Sim.fall(false)], ['siren', 'dir_fallc', () => Sim.fall(true)]] },
       { t: 'dg_voice', items: [['mic', 'dir_lost', () => Sim.sayPhrase('p3')], ['mic', 'dir_fellsay', () => Sim.sayPhrase('p1')], ['mic', 'dir_helpsay', () => Sim.sayPhrase('p2')], ['pill', 'dir_forgot', () => Sim.sayPhrase('p4')]] },
       { t: 'dg_daily', items: [['pill', 'dir_med', () => Sim.medDue()]] },
       { t: 'dg_device', items: [['batteryLow', 'dir_batt', () => Sim.batteryLow()], ['hand', 'dir_removed', () => Sim.bandRemoved()], ['wifioff', 'dir_gps', () => Sim.gpsLost()], ['moon', 'dir_night', () => Sim.toggleNight()]] },

@@ -30,7 +30,7 @@
     <div class="hero-copy">
       <span class="eyebrow"><i></i><span data-i18n="eyebrow">Interactive prototype</span></span>
       <h1><span data-i18n="h1a">Never lost.</span><br><span class="grad" data-i18n="h1b">Always guided home.</span></h1>
-      <p class="lead" data-i18n="lead">A calm companion on the wrist or around the neck for people with dementia. It watches the safe zone, talks them home step by step with landmark photos, senses falls and heart trouble, and keeps the family in the loop.</p>
+      <p class="lead" data-i18n="lead">A calm companion on the wrist or around the neck for people with dementia. It watches the safe zone, talks them home step by step with landmark photos, senses falls, and keeps the family in the loop.</p>
 
       <div class="role-title" data-i18n="whoAreYou">Who is using this screen?</div>
       <div class="roles">
@@ -41,7 +41,7 @@
           <span class="role-go"><span data-i18n="startSetup">Start setup</span> <span data-ic="right" data-sz="16"></span></span>
         </button>
         <button class="role r-elder" id="roleElder">
-          <span class="role-ic" data-ic="heart" data-sz="40"></span>
+          <span class="role-ic" data-ic="watch" data-sz="40"></span>
           <span class="role-name" data-i18n="roleElder">I wear the device</span>
           <span class="role-desc" data-i18n="roleElderD">Giant buttons. Go home, call family, ask the assistant, SOS.</span>
           <span class="role-go"><span data-i18n="openDevice">Open device</span> <span data-ic="right" data-sz="16"></span></span>
@@ -55,7 +55,7 @@
   <div class="feature-strip">
     <div class="ft"><span data-ic="image" data-sz="22"></span><div><b data-i18n="ft1">Landmark photo guide</b><span data-i18n="ft1d">"Do you see this gate? Turn right."</span></div></div>
     <div class="ft"><span data-ic="volume" data-sz="22"></span><div><b data-i18n="ft2">Voice-first companion</b><span data-i18n="ft2d">Calm, personal, knows their words</span></div></div>
-    <div class="ft"><span data-ic="pulse" data-sz="22"></span><div><b data-i18n="ft3">Fall and heart sensing</b><span data-i18n="ft3d">Alerts family without a button press</span></div></div>
+    <div class="ft"><span data-ic="alert" data-sz="22"></span><div><b data-i18n="ft3">Fall and safety sensing</b><span data-i18n="ft3d">Alerts family without a button press</span></div></div>
     <div class="ft"><span data-ic="ladder" data-sz="22"></span><div><b data-i18n="ft4">Escalation ladder</b><span data-i18n="ft4d">Gentle first, loud only when needed</span></div></div>
   </div>
 </section>
@@ -109,7 +109,7 @@
     </div>
     <div class="mode-options" id="modeOptions">
       <button class="mode-option on" data-mode="normal"><span data-ic="settings" data-sz="17"></span><span><b data-i18n="modeNormal">Normal</b><small data-i18n="modeNormalD">All features</small></span></button>
-      <button class="mode-option" data-mode="focus"><span data-ic="heart" data-sz="17"></span><span><b data-i18n="modeFocus">Simple</b><small data-i18n="modeFocusD">Only two choices</small></span></button>
+      <button class="mode-option" data-mode="focus"><span data-ic="shield" data-sz="17"></span><span><b data-i18n="modeFocus">Simple</b><small data-i18n="modeFocusD">Only two choices</small></span></button>
       <button class="mode-option" data-mode="dialogue"><span data-ic="chat" data-sz="17"></span><span><b data-i18n="modeDialogue">Dialogue</b><small data-i18n="modeDialogueD">Chat with Momo</small></span></button>
     </div>
     <div class="mode-owner"><span data-ic="shield" data-sz="16"></span><span data-i18n="modeOwner">Set by caregiver</span></div>
@@ -142,7 +142,6 @@
               <span class="d-time" id="dTime">09:41</span>
               <span class="d-badges">
                 <span class="badge gps" id="dGps"><span data-ic="gps" data-sz="14"></span>GPS</span>
-                <span class="badge hr" id="dHr"><span data-ic="heart" data-sz="14"></span><b id="dHrV">72</b></span>
                 <span class="badge bat" id="dBat"><span data-ic="battery" data-sz="16"></span><b id="dBatV">84%</b></span>
               </span>
             </div>
@@ -223,11 +222,9 @@
             </div>
             <div class="p-map"><div id="famMap" class="p-mapbox"></div><div class="p-maptag" id="famMapTag"></div></div>
             <div class="p-stats">
-              <div class="ps"><span data-ic="heart" data-sz="18"></span><b id="pHr">72</b><i>bpm</i></div>
               <div class="ps"><span data-ic="pin" data-sz="18"></span><b id="pDist">0.1</b><i>km</i></div>
               <div class="ps"><span data-ic="battery" data-sz="18"></span><b id="pBat">84</b><i>%</i></div>
             </div>
-            <div class="p-ecg"><canvas id="ecg" width="320" height="56"></canvas><span class="ecg-tag" id="ecgTag">Normal</span></div>
             <div class="p-ladder" id="pLadder"></div>
             <div class="p-actions">
               <button class="pa" id="pCall"><span data-ic="phone" data-sz="22"></span><b data-i18n="paCall">Call</b></button>

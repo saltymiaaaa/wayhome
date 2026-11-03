@@ -426,7 +426,6 @@
       <button data-a="wrong">${ic('route', 16)}<span>${T('nd_wrong')}</span></button>
       <button data-a="stop">${ic('stop', 16)}<span>${T('nd_stop')}</span></button>
       <button data-a="fall">${ic('alert', 16)}<span>${T('nd_fall')}</span></button>
-      <button data-a="hr">${ic('pulse', 16)}<span>${T('nd_hr')}</span></button>
       <button data-a="night">${ic('moon', 16)}<span>${T('nd_night')}</span></button>
       <button data-a="low"><span>${T('mgLowButton')}</span></button>
       <button data-a="restore"><span>${T('mgRestore')}</span></button>
@@ -436,7 +435,7 @@
       if(a==='low'){if(!S.gpsLost)WH.Sim.gpsLost();return;}
       if(a==='restore'){if(S.gpsLost)WH.MemorySafety.restore();return;}
       if(a==='confused')return WH.MemorySafety.confused();
-      if (a === 'wrong') G.wrongTurn(); else if (a === 'stop') G.holdStop(); else if (a === 'fall') WH.Sim.fall(false); else if (a === 'hr') WH.Sim.hrAbnormal('high'); else if (a === 'night') WH.Sim.toggleNight();
+      if (a === 'wrong') G.wrongTurn(); else if (a === 'stop') G.holdStop(); else if (a === 'fall') WH.Sim.fall(false); else if (a === 'night') WH.Sim.toggleNight();
     }));
     G.setView(G.viewMode);
   };

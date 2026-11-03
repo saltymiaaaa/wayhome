@@ -100,7 +100,7 @@
         if (im.complete && im.naturalWidth) g.drawImage(im, x + w / 2 - 36, y + 22, 72, 72);
         g.fillStyle = '#fff'; g.font = '800 27px "Be Vietnam Pro", sans-serif'; g.fillText(b[2], x + w / 2, y + 134);
       });
-      g.fillStyle = '#8a6b3e'; g.font = '600 24px "Be Vietnam Pro", sans-serif'; g.fillText('72 bpm    84%', W / 2, 596);
+      g.fillStyle = '#8a6b3e'; g.font = '600 24px "Be Vietnam Pro", sans-serif'; g.fillText('84% battery', W / 2, 596);
       this.tex.needsUpdate = true;
     }
     frame(now) {

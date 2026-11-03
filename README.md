@@ -36,7 +36,7 @@ Wearer experience (the band)
 └── Guided return   full-screen landmark-photo route home
 
 Caregiver experience (the family phone, tabbed)
-├── Overview        live map, heart rate, battery, escalation ladder, quick actions
+├── Overview        live map, distance, battery, escalation ladder, quick actions
 ├── Contacts        add, edit, validate, pair, delete and reorder contacts
 ├── Safety          safe radius, grace time, night curfew, escalation ladder timings
 ├── Landmarks       browse, add, edit, delete and approve the familiar places
