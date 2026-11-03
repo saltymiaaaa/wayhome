@@ -573,7 +573,6 @@
   Sim.buildDirector = function () {
     const groups = [
       { t: 'dg_move', items: [['walk', 'dir_wander', () => Sim.wander()], ['pin', 'dir_teleport', () => Sim.teleportFar()], ['clock', 'dir_ffwd', () => { if (Esc.on) { Esc.vmin += 8;if(WH.SafetyPolicy.incident?.kind==='geofence')WH.SafetyPolicy.elapsed+=8; WH.sysLog('+8 virtual minutes', 'warn'); } else WH.toast(T('t_needOut'), 'warn'); }]] },
-      { t: 'dg_safety', items: [['alert', 'dir_fall', () => Sim.fall(false)], ['siren', 'dir_fallc', () => Sim.fall(true)]] },
       { t: 'dg_voice', items: [['mic', 'dir_lost', () => Sim.sayPhrase('p3')], ['mic', 'dir_fellsay', () => Sim.sayPhrase('p1')], ['mic', 'dir_helpsay', () => Sim.sayPhrase('p2')], ['pill', 'dir_forgot', () => Sim.sayPhrase('p4')]] },
       { t: 'dg_daily', items: [['pill', 'dir_med', () => Sim.medDue()]] },
       { t: 'dg_device', items: [['batteryLow', 'dir_batt', () => Sim.batteryLow()], ['hand', 'dir_removed', () => Sim.bandRemoved()], ['wifioff', 'dir_gps', () => Sim.gpsLost()], ['moon', 'dir_night', () => Sim.toggleNight()]] },
