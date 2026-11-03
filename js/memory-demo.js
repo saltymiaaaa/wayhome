@@ -4,7 +4,7 @@
  const P=WH.MemoryDemo={active:false,step:0,grown:false};
  P.stop=function(){P.active=false;document.body.classList.remove('memory-presenting');P.render();};
  P.exit=function(){P.stop();WH.Memory.close();WH.MemoryLibrary.close();WH.closePrompt(true);WH.Sim.abortCall();WH.famLayer(null);if(WH.Guide.active)WH.Guide.stop(true);WH.MemorySafety.clear();WH.MemorySafety.unresolved=false;WH.MemorySafety.reason=null;S.gpsLost=false;S.removed=false;S.out=false;WH.Guide.paused=false;WH.SafetyPolicy.reset();WH.enterStage('both');};
- P.reset=function(){WH.Sim.reset();P.step=0;P.grown=false;P.active=true;document.body.classList.add('memory-presenting');WH.enterStage('both');WH.Memory.open();P.render();};
+ P.reset=function(){WH.Sim.reset();P.step=0;P.grown=false;P.active=true;document.body.classList.add('memory-presenting');WH.enterStage('both');WH.Memory.openFull();P.render();};
  P.start=function(){if(S.sosActive)return;P.reset();};
  P.market=()=>D.state.places.find(p=>p.id==='l3'&&p.memoryApproved&&p.navigationApproved&&D.hasPosition(p));
  P.route=function(){const market=P.market();if(!market){WH.toast(T('mgDemoMissing'),'warn');return false;}const G=WH.Guide;
@@ -19,10 +19,10 @@
  P.go=function(step){if(S.sosActive)return;step=Math.max(0,Math.min(8,step));WH.MemorySafety.clear();WH.Sim.abortCall();WH.famLayer(null);WH.closePrompt(true);
    if(step<4){WH.Sim.reset();WH.enterStage('both');}
    P.step=step;
-   if(step===0)WH.Memory.open();
-   if(step===1){const market=P.market();if(market){WH.Memory.open();WH.Memory.activity('places',market.id);}else WH.toast(T('mgDemoMissing'),'warn');}
-   if(step===2){WH.Memory.open();const market=P.market();if(market&&!P.grown){WH.Memory.activity('places',market.id);WH.Memory.finish();P.grown=true;}WH.Memory.garden();}
-   if(step===3){WH.Memory.open();WH.MemorySafety.check('divergence');}
+   if(step===0)WH.Memory.openFull();
+   if(step===1){const market=P.market();if(market){WH.Memory.openFull();WH.Memory.activity('places',market.id);}else WH.toast(T('mgDemoMissing'),'warn');}
+   if(step===2){WH.Memory.openFull();const market=P.market();if(market&&!P.grown){WH.Memory.activity('places',market.id);WH.Memory.finish();P.grown=true;}WH.Memory.garden();}
+   if(step===3){WH.Memory.openFull();WH.MemorySafety.check('divergence');}
    if(step===4){if(P.route()){WH.Guide.paused=true;WH.MemorySafety.offer();}}
    if(step===5)P.landmark();
    if(step===6&&P.landmark()){WH.Guide.answerNo();WH.closePrompt(true);WH.Guide.answerNo();}
