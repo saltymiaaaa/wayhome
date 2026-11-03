@@ -336,6 +336,9 @@
     else if(S.gpsLost){main=T('mgLow');sub=T('mgLocationUncertain');icon='gps';distance='';confirm=false;}
     else if(G.state==='detour'){main=T('offRoute');sub=T('offRouteSub');icon='uturn';distance='';confirm=false;}
     else if(G.state==='walking'&&target){main=T('mgTowardLandmark',{name:target.lm.guidanceCue||target.lm.name});sub=T('mgLandmarkDistance',{distance:Math.max(0,Math.round((target.s-G.s)*M/5)*5)});icon='walk';distance='';}
+    const landmarkCard=$('#wgLandmark'),showLandmark=!!target&&!G.paused&&!S.gpsLost&&G.state!=='detour'&&G.state!=='arrived';
+    root.classList.toggle('has-landmark',showLandmark);landmarkCard.hidden=!showLandmark;
+    if(showLandmark){const photo=target.lm.photo||landmarkArt(target.lm.type,target.lm.name);$('#wgLandmarkPhoto').src=photo;$('#wgLandmarkPhoto').alt=target.lm.name;$('#wgLandmarkCaption').textContent=target.lm.name;}
     $('#wgArrow').innerHTML=ic(icon,54);$('#wgDistance').textContent=distance;$('#wgMain').textContent=main;$('#wgSub').textContent=sub;
     $('#wgStep').textContent=Math.min(G.idx+1,G.steps.length)+'/'+G.steps.length;$('#wgProgress').style.width=Math.min(100,(G.s/G.route.total)*100)+'%';
     const btn=$('#wgConfirm');btn.classList.toggle('on',confirm);btn.querySelector('span:last-child').textContent=G.state==='arrived'?T('done'):st?.type==='arrive'?T('arriveQ'):T('watchReached');
