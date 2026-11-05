@@ -49,7 +49,7 @@
   add('director', 'Demo director', 'Bảng điều khiển demo');
   add('directorSub', 'Trigger real-life moments without leaving the room.', 'Tạo các tình huống thật mà không cần rời khỏi phòng.');
   add('sysLog', 'System brain', 'Bộ não hệ thống');
-  add('devLabel', 'WayHome band (worn by the user)', 'Vòng WayHome (người già đeo)');
+  add('devLabel', 'Ping An Gem (worn by the user)', 'Ping An Gem (người già đeo)');
   add('famLabel', 'Family phone', 'Điện thoại người nhà');
   add('t_stage_hint', 'Use the Demo director on the left to create any situation.', 'Dùng bảng Demo bên trái để tạo mọi tình huống.');
   add('modeCaregiver', 'Caregiver controls', 'Điều khiển của người chăm sóc');

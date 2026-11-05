@@ -11,8 +11,8 @@
   function route(tone) {
     const n = S.contacts.length, all = [...Array(n).keys()];
     if (tone === 'blue' || tone === 'green') return { to: [0], ch: ['push'] };
-    if (tone === 'amber') return { to: all.slice(0, 2), ch: ['push', 'sms'] };
-    return { to: all, ch: ['push', 'sms', 'wechat'], call: n > 1 };
+    // V1: data alerts only (push + SMS) to the primary contact; the backup contact is added explicitly after T2.
+    return { to: [0], ch: ['push', 'sms'] };
   }
   function chFor(m, i) {
     if (!m.to.includes(i)) return [];
@@ -23,7 +23,7 @@
     return ch;
   }
   Inbox.dispatch = function (o) {
-    const r = route(o.tone || 'blue');
+    const r = route(o.tone || 'blue'); if (o.to) r.to = o.to;
     Inbox.msgs.unshift({ time: WH.nowStr(), tone: o.tone || 'blue', ic: o.ic || 'bell', title: plain(o.title), body: plain(o.body), to: r.to, ch: r.ch, call: !!r.call });
     if (Inbox.msgs.length > 40) Inbox.msgs.pop();
     if (S.view !== 'inbox') { Inbox.unread++; badge(); }
