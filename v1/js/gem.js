@@ -238,7 +238,8 @@
     const el = $('#gVoice'); if (!el) return;
     if (!text) { el.hidden = true; return; }
     el.hidden = false; el.innerHTML = ic('volume', 16) + '<span>' + E(text) + '</span>';
-    WH.say(text, { noCaption: true });
+    WH.sysLog('<b>Voice prompt</b>: "' + E(text) + '"');
+    if (S.voiceOn && 'speechSynthesis' in window) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = { vi: 'vi-VN', id: 'id-ID' }[S.lang] || 'en-US'; u.rate = 0.92; speechSynthesis.speak(u); } catch (e) { /* ignore */ } }
   };
 
   /* SOS bar: press and hold */
@@ -349,7 +350,7 @@
         h = `<img class="g-photo" src="${E(window.landmarkArt('home', ''))}" alt=""><div class="g-h">${t('homeqH')}</div><div class="g-p sm">${t('homeqP')}</div><div class="g-row">${btn('homeYes', t('yes'), 'green half')}${btn('homeNo', t('no'), 'half')}</div>`;
         break;
       case 'homeno':
-        h = `<div class="g-ic big blue">${ic('assistant', 52)}</div><div class="g-h sm">${t('homenoH')}</div><div class="g-p">${t('homenoP')}</div><div class="g-col">${btn('contact', t('contact'), 'blue w')}${btn('lookAgain2', t('back'), 'sm')}</div>`;
+        h = `<div class="g-ic big blue">${ic('users', 52)}</div><div class="g-h sm">${t('homenoH')}</div><div class="g-p">${t('homenoP')}</div><div class="g-col">${btn('contact', t('contact'), 'blue w')}${btn('lookAgain2', t('back'), 'sm')}</div>`;
         break;
       case 'closed':
         h = `<div class="g-ic big green">${ic('check', 60)}</div><div class="g-h">${t('closedH')}</div><div class="g-p">${t('closedP')}</div><div class="g-col">${btn('toIdle', t('done'), 'gold w')}</div>`;
@@ -357,7 +358,7 @@
       case 'checkin':
       case 'notified': {
         const noti = V.s === 'notified';
-        h = `<div class="g-ic blue">${ic('assistant', 48)}</div><div class="g-h">${noti ? t('notiH') : (x.again ? t('ciAgain') : t('ciH'))}</div>
+        h = `<div class="g-ic blue">${ic('bell', 44)}</div><div class="g-h">${noti ? t('notiH') : (x.again ? t('ciAgain') : t('ciH'))}</div>
           <div class="g-p sm">${noti ? t('notiP') : whyText(x.reason)}</div>
           ${noti ? '' : `<div class="g-count" id="gCount">${t('ciWait', { s: Math.max(0, Math.ceil(x.left)) })}</div>`}
           <div class="g-row">${btn('imOk', t('imOk'), 'green half')}${btn('takeHome', t('takeHome'), 'blue half')}</div>
@@ -506,7 +507,7 @@
     V.alert = { kind, reason, loc: lt, status: 'delivered', ackBy: null, escalated: false, t0: performance.now(), left: tm, backupAck: false };
     WH.famBanner({ ic: kind === 'sos' ? 'siren' : 'bell', tone: kind === 'sos' ? 'red' : 'amber', title: V.alertTitle(), body: lt.text + ' · ' + (lt.live ? t('live') : t('last') + ' ' + lt.time) });
     V.after(V.cfg.T2 / V.cfg.scale, () => {
-      if (V.alert && V.alert.status === 'delivered' && !V.alert.escalated) { V.alert.escalated = true; V.feed('fEsc', 'red', 'users'); WH.sysLog('Escalated to backup contact ' + ((WH.contact(1) || {}).name || ''), 'bad'); V.renderPhone(); }
+      if (V.alert && V.alert.status === 'delivered' && !V.alert.escalated) { V.alert.escalated = true; V.feed('fEsc', 'red', 'users'); WH.Inbox && WH.Inbox.dispatch({ tone: 'red', ic: 'siren', title: V.alertTitle(), body: t('fEsc'), to: [1] }); WH.sysLog('Escalated to backup contact ' + ((WH.contact(1) || {}).name || ''), 'bad'); V.renderPhone(); }
     }, 'alert');
     if (V.sos) { V.sos.st = 'delivered'; if (V.s === 'sos') V.render(); }
     V.renderPhone();
@@ -738,7 +739,7 @@
     if (V.s === 'checkin') { V.x.left = Math.max(0, V.x.left - dt * sc); const c = $('#gCount'); if (c) c.textContent = t('ciWait', { s: Math.ceil(V.x.left) }); }
     // phone countdown
     if (V.alert && V.alert.status === 'delivered' && !V.alert.escalated) { V.alert.left = Math.max(0, V.alert.left - dt * sc); const l = $('#v1Left'); if (l) l.textContent = t('escL', { t: Math.ceil(V.alert.left), who: E((WH.contact(1) || { name: 'Mei' }).name) }); }
-    acc += dt; secAcc += dt;
+    acc += dt; secAcc += dt; V._rf = (V._rf || 0) + dt; if (V._rf > 0.4) { V._rf = 0; if (S.screen === 'stage') WH.refresh(); }
     if (acc > 0.35) { acc = 0; if (V.trip && V.trip.started) V.renderPhone(); }
     if (secAcc > 1) { secAcc = 0; const tm = $('#gTime'); if (tm) tm.textContent = nowTime(); const sb = $('#gSt'); if (sb && V.s !== 'check') sb.innerHTML = st(); }
   };
