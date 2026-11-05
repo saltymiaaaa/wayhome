@@ -702,7 +702,6 @@
         <div class="dgrow"><span>T2</span>${opts('T2', [6, 12, 20], c.T2, 's')}</div>
         <div class="dgrow"><span>${t('d_speed')}</span>${opts('scale', [1, 2, 3], c.scale, '×')}</div>
       </div>
-      <div class="dg"><h4>${t('d_color')}</h4><div class="opts">${['navy', 'wood', 'fire', 'earth', 'metal', 'water'].map((k) => `<button class="swatch ${c.color === k ? 'on' : ''}" data-color="${k}" title="${k}" style="background:${{ navy: '#2c4a86', wood: '#46593b', fire: '#b9473d', earth: '#cfa857', metal: '#e8e4dc', water: '#1b2742' }[k]}"></button>`).join('')}</div></div>
       <div class="dg extras"><h4>${t('d_extra')}</h4>
         <button class="dbtn" id="dGarden">${ic('image', 20)}<span>${t('d_garden')}</span></button>
         <button class="dbtn" id="dMomo">${ic('chat', 20)}<span>${t('d_momo')}</span></button>
@@ -710,7 +709,6 @@
       <div class="dg"><button class="dbtn" id="dReset">${ic('refresh', 20)}<span>${t('d_reset')}</span></button><p class="dir-sub" style="margin-top:6px">${t('d_note')}</p></div>`;
     $$('#dirGroups [data-tog]').forEach((el) => $$('button', el).forEach((b) => (b.onclick = () => { const on = b.dataset.v === '1'; const id = el.dataset.tog; if (id === 'gps') { V.cfg.gps = on; if (!on) { V.lastFix = V.lastFix || { pos: streets(), time: nowTime() }; } } else V.cfg[id] = on; V.buildDirector(); if (V.s === 'idle' || V.s === 'stopgps') V.render(); V.renderPhone(); WH.sysLog('Demo: ' + id + ' = ' + (on ? 'ON/GOOD' : 'OFF/STALE'), 'warn'); })));
     $$('#dirGroups [data-opt]').forEach((el) => $$('button', el).forEach((b) => (b.onclick = () => { V.cfg[el.dataset.opt] = +b.dataset.v; V.buildDirector(); })));
-    $$('#dirGroups .swatch').forEach((b) => (b.onclick = () => { V.cfg.color = b.dataset.color; $('#gem').dataset.color = b.dataset.color; V.buildDirector(); }));
     $('#dOut').onclick = () => V.wearerOut(); $('#dLeave').onclick = () => V.scLeave(); $('#dOff').onclick = () => V.scOffRoute(); $('#dStop').onclick = () => V.scStop();
     $('#dGarden').onclick = () => WH.Memory.open(); $('#dMomo').onclick = () => WH.openChat(); $('#dReset').onclick = () => V.reset(false);
   };
